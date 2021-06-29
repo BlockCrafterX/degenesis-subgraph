@@ -1,6 +1,55 @@
-type Gravatar @entity {
+"""
+Questions:
+  Do we need RateData?
+"""
+type Contract @entity {
   id: ID!
-  owner: Bytes!
-  displayName: String!
-  imageUrl: String!
+  totalUSD: BigInt!
+  open: Boolean!
+  balances: [Balance!]!
 }
+
+type Token @entity {
+  id: ID!
+  oracle: Bytes!
+  gensis: Bytes!
+  name: String!
+  total: BigInt!
+  totalUSD: BigInt!
+}
+
+type User @entity {
+  id: ID!
+  total: BigInt!
+  participant: Boolean!
+  balances: [Balance!]! 
+}
+
+# Keep track of deposits / withdraws
+type Balance @entity {
+  id: ID!
+  address: Bytes! #Address of user or contract (defi or core)
+  token: Token!
+  total: BigInt!
+  totalUSD: BigInt!
+}
+
+type WhiteList @entity {
+  id: ID!
+  root: Bytes!
+}
+
+type SupportedTokens {
+  id: ID! #Not sure what to do here, might just make number
+  token: [Token!]!
+}
+
+type FinalizedAsset @entity {
+  id: ID!
+  user: Bytes!
+  token: Bytes!
+  genesisDeposit: Boolean!
+  amount: BigInt!
+}
+
+
