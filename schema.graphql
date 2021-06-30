@@ -15,8 +15,9 @@ type Contract @entity {
 type Token @entity {
   id: ID!
   name: String!
-  oracle: Oracle!
-  gensis: Genesis!
+  symbol: String!
+  oracle: Oracle! # Will be '0x0' for Core
+  pool: Pool! # Pool transferred to, Genesis for Defi reactor for Core
   total: BigInt!
   totalUSD: BigInt!
 }
@@ -26,10 +27,12 @@ type Oracle @entity {
   token: Token!
 }
 
-type Genesis @entity {
+type Pool @entity {
   id: ID!
   depositedToken: Token!
-  tAsset: Bytes!
+  tAsset: Bytes! # Can this be Token?
+                    # Probably not, would have to track pools as well
+                    # Maybe in future if subgraph gets expanded
   tAssetName: String!
 }
 

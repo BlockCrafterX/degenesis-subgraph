@@ -132,7 +132,7 @@ dataSources:
             handler: HANDLER HERE
           - event: WhitelistConfigured(WhitelistSettings)
             handler: HANDLER HERE
-        callHandlers:
+        callHandlers: # Will likley not use many of these
           - function: configureWhitelist(WhitelistSettings)
             handler: HANDLER HERE
           - function: setDuration(uint256)
