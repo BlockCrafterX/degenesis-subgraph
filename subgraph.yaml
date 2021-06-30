@@ -1,27 +1,157 @@
 specVersion: 0.0.2
-description: Gravatar for Ethereum
-repository: https://github.com/graphprotocol/example-subgraph
+description: Tokemak Subgraph
+repository: https://github.com/Tokemak/tokemak-subgraph
 schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: Gravity
+    name: DefiRound
     network: mainnet
     source:
-      address: '0x2E645469f354BB4F5c8a05B3b30A929361cf77eC'
-      abi: Gravity
+      address: 'ADDRESS HERE'
+      abi: DefiRound
+      startBlock: 'START BLOCK HERE'
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
       language: wasm/assemblyscript
       entities:
-        - Gravatar
+        - Contract
+        - Token
+        - Oracle
+        - Gensis
+        - User
+        - Balance
+        - WhiteList
+        - SupportedTokens
+        - FinalizedAsset
       abis:
-        - name: Gravity
-          file: ./abis/Gravity.json
+        - name: DefiRound
+          file: ./abis/DefiRound.json
       eventHandlers:
-        - event: NewGravatar(uint256,address,string,string)
-          handler: handleNewGravatar
-        - event: UpdatedGravatar(uint256,address,string,string)
-          handler: handleUpdatedGravatar
+        - event: Deposited(address,TokenData)
+          handler: HANDLER HERE
+        - event: WithDrawn(address,TokenData)
+          handler: HANDLER HERE
+        - event: SupportedTokensAdded(SupportedTokenData[])
+          handler: HANDLER HERE
+        - event: RatesPublished(RateData[]) # Not sure if needed
+          handler: HANDLER HERE
+        - event: GenesisTransfer(address,uint256)
+          handler: HANDLER HERE
+        - event: Claimed(address,uint256)
+          handler: HANDLER HERE
+        - event: AssetsFinalized(address,address,uint256)
+          handler: HANDLER HERE
+        - event: TransferredToPool(address,uint256)
+          handler: HANDLER HERE
+        - event: WhitelistConfigured(WhitelistSettings)
+          handler: HANDLER HERE
+        - event: TreasuryTransfer() # Will not use if no params
+          handler: HANDLER HERE
+      callHandlers: # Likely will not use a lot of these, wanted to lay everything out
+        - function: configureWhitelist(WhitelistSettings)
+          handler: HANDLER HERE
+        - function: currentStage()
+          handler: HANDLER HERE
+        - function: deposit(TokenData,bytes32[])
+          handler: HANDLER HERE
+        - function: totalValue()
+          handler: HANDLER HERE
+        - function: getMaxTotalValue()
+          handler: HANDLER HERE
+        - function: treasury()
+          handler: HANDLER HERE
+        - function: totalSupply(address)
+          handler: HANDLER HERE
+        - function: withdraw(TokenData,bool)
+          handler: HANDLER HERE
+        - function: addSupportedTokens(SupportedTokenData[])
+          handler: HANDLER HERE
+        - function: getSupportedTokens()
+          handler: HANDLER HERE
+        - function: getTokenOracles(address[])
+          handler: HANDLER HERE
+        - function: publishRates(RateData[],OversubscriptionRate,uint256)
+          handler: HANDLER HERE
+        - function: getRates(address[])
+          handler: HANDLER HERE
+        - function: accountBalance(address)
+          handler: HANDLER HERE
+        - function: finalizeAssets(bool)
+          handler: HANDLER HERE
+        - function: getGenesisPools(address[])
+          handler: HANDLER HERE
+        - function: getAccountData(address)
+          handler: HANDLER HERE
+        - function: transferToTreasury()
+          handler: HANDLER HERE
+        - function: getRateAdjustedAmounts(uint256,address)
+          handler: HANDLER HERE
       file: ./src/mapping.ts
+  - kind: ethereum/contract
+      name: CoreEvent
+      network: mainnet
+      source:
+        address: 'ADDRESS HERE'
+        abi: CoreEvent
+        startBlock: 'START BLOCK HERE'
+      mapping:
+        kind: ethereum/events
+        apiVersion: 0.0.4
+        language: wasm/assemblyscript
+        entities: # May change to specialize for Core
+          - Contract
+          - Token
+          - Oracle
+          - Genesis
+          - User
+          - Balance
+          - WhiteList
+          - SupportedTokens
+          - FinalizedAssets
+        abis: 
+          name: CoreEvent
+          file: ./abis/CoreEvent.json
+        eventHandlers:
+          - event: SupportedTokensAdded(SupportedTokenData[])
+            handler: HANDLER HERE
+          - event: TreasurySet(address)
+            handler: HANDLER HERE
+          - event: DurationSet(DurationInfo)
+            handler: HANDLER HERE
+          - event: Deposited(address,Tokendata[])
+            handler: HANDLER HERE
+          - event: Withdrawn(address,TokenData[])
+            handler: HANDLE HERE
+          - event: RatesPublished(RateData[])
+            handler: HANDLER HERE
+          - event: AssetsFinalized(address,FinalizedAccountData[])
+            handler: HANDLER HERE
+          - event: TreasuryTransfer(TokenData[])
+            handler: HANDLER HERE
+          - event: WhitelistConfigured(WhitelistSettings)
+            handler: HANDLER HERE
+        callHandlers:
+          - function: configureWhitelist(WhitelistSettings)
+            handler: HANDLER HERE
+          - function: setDuration(uint256)
+            handler: HANDLER HERE
+          - function: addSupportedTokens(SupportedTokenData[])
+            handler: HANDLER HERE
+          - function: getSupportedTokens()
+            handler: HANDLER HERE
+          - function: deposit(TokenData[], bytes32[])
+            handler: HANDLER HERE
+          - function: withdraw(TokenData[])
+            handler: HANDLER HERE
+          - function: getAccountData(address)
+            handler: HANDLER HERE
+          - function: setRates(RateData[])
+            handler: HANDLER HERE
+          - function: getRates()
+            handler: HANDLER HERE
+          - function: Finalize(TokenFarming[])
+            handler: HANDLER HERE
+          - function: getRateAdjustedAmounts(uint256,address)
+            handler: HANDLER HERE

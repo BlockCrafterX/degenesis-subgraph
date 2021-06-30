@@ -35,7 +35,7 @@ type Genesis @entity {
 
 type User @entity {
   id: ID!
-  total: BigInt!
+  totalUSD: BigInt!
   participant: Boolean!
   balances: [Balance!]! 
 }
@@ -43,7 +43,7 @@ type User @entity {
 # Keep track of running totals
 type Balance @entity {
   id: ID!
-  address: Bytes! #Address of user or contract (defi or core)
+  address: Bytes! # Address of user or contract (defi or core)
   token: Token!
   total: BigInt!
   totalUSD: BigInt!
@@ -67,7 +67,7 @@ type FinalizedAsset @entity {
   """
   user: Bytes! 
   token: Bytes! # Consider making this `Token` type instead of Bytes
-  genesisDeposit: Boolean!
+  privateFarming: Boolean! # Genesis for Defi, farming for Core
   amount: BigInt!
 }
 
