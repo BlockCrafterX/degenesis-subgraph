@@ -1,21 +1,36 @@
 """
 Questions:
   Do we need RateData?
+  ID can be anything basically
 """
 type Contract @entity {
   id: ID!
   totalUSD: BigInt!
-  open: Boolean!
+  depositsOpen: Boolean!
+  withdrawalsOpen: Boolean!
+  privateFarmingOpen: Boolean!
   balances: [Balance!]!
 }
 
 type Token @entity {
   id: ID!
-  oracle: Bytes!
-  gensis: Bytes!
   name: String!
+  oracle: Oracle!
+  gensis: Genesis!
   total: BigInt!
   totalUSD: BigInt!
+}
+
+type Oracle @entity {
+  id: ID!
+  token: Token!
+}
+
+type Genesis @entity {
+  id: ID!
+  depositedToken: Token!
+  tAsset: Bytes!
+  tAssetName: String!
 }
 
 type User @entity {
@@ -25,7 +40,7 @@ type User @entity {
   balances: [Balance!]! 
 }
 
-# Keep track of deposits / withdraws
+# Keep track of running totals
 type Balance @entity {
   id: ID!
   address: Bytes! #Address of user or contract (defi or core)
@@ -40,14 +55,18 @@ type WhiteList @entity {
 }
 
 type SupportedTokens {
-  id: ID! #Not sure what to do here, might just make number
+  id: ID!
   token: [Token!]!
 }
 
 type FinalizedAsset @entity {
   id: ID!
-  user: Bytes!
-  token: Bytes!
+  """
+  Should 'user' be a User entity? Not sure if that makes sense as we don't neccessarily want total 
+  and balances here, something to think about
+  """
+  user: Bytes! 
+  token: Bytes! # Consider making this `Token` type instead of Bytes
   genesisDeposit: Boolean!
   amount: BigInt!
 }
