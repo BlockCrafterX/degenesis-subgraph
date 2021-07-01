@@ -57,7 +57,7 @@ type WhiteList @entity {
   root: Bytes!
 }
 
-type SupportedTokens {
+type SupportedTokens @entity {
   id: ID!
   token: [Token!]!
 }
