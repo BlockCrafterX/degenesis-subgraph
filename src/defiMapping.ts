@@ -3,7 +3,8 @@ import {
   AddSupportedTokensCall,
   Deposited, 
   Withdrawn, 
-  WhitelistConfigured
+  WhitelistConfigured,
+  SupportedTokensAdded
 } from "../generated/DefiRound/DefiRound";
 import {
   ERC20
@@ -13,7 +14,8 @@ import {
   Balance, 
   Token,
   User,
-  WhiteList
+  WhiteList,
+  SupportedTokens
 } from "../generated/schema";
 
 // Consolidate reused code once functions are complete
@@ -148,6 +150,17 @@ export function handleWhitelist(event: WhitelistConfigured): void {
   }
   whitelist.root = event.params.settings.root;
   whitelist.enabled = event.params.settings.enabled;
+}
+
+export function handleSupportedTokens(event: SupportedTokensAdded): void {
+  let supportedTokensId = event.block.number.toString();
+  let supportedTokens = SupportedTokens.load(supportedTokensId);
+
+  if (supportedTokens == null) {
+    supportedTokens = new SupportedTokens(supportedTokensId)
+  }
+
+  // token here
 }
 
 // Example of using call vs event, don't actually need
