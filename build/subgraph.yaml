@@ -2,15 +2,14 @@ specVersion: 0.0.2
 description: Tokemak Subgraph
 repository: https://github.com/Tokemak/tokemak-subgraph
 schema:
-  file: ./schema.graphql
+  file: schema.graphql
 dataSources:
   - kind: ethereum/contract
     name: DefiRound
     network: mainnet
     source:
-      address: '0x605C9B6f969A27982Fe1Be16e3a24F6720A14beD'
+      address: "0x605C9B6f969A27982Fe1Be16e3a24F6720A14beD"
       abi: DefiRound
-      # startBlock: 'START BLOCK HERE'
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -27,7 +26,7 @@ dataSources:
         - FinalizedAsset
       abis:
         - name: DefiRound
-          file: ./abis/DefiRound.json
+          file: DefiRound/abis/DefiRound.json
       eventHandlers:
         - event: Deposited(address,(address,uint256))
           handler: HANDLER HERE
@@ -35,7 +34,7 @@ dataSources:
           handler: HANDLER HERE
         - event: SupportedTokensAdded((address,address,address,uint256)[])
           handler: HANDLER HERE
-        - event: RatesPublished((address,uint256,uint256)[]) # Not sure if needed
+        - event: RatesPublished((address,uint256,uint256)[])
           handler: HANDLER HERE
         - event: GenesisTransfer(address,uint256)
           handler: HANDLER HERE
@@ -47,9 +46,9 @@ dataSources:
           handler: HANDLER HERE
         - event: WhitelistConfigured((bool,bytes32))
           handler: HANDLER HERE
-        - event: TreasuryTransfer() # Will not use if no params
+        - event: TreasuryTransfer()
           handler: HANDLER HERE
-      callHandlers: # Likely will not use a lot of these, wanted to lay everything out
+      callHandlers:
         - function: configureWhitelist((bool,bytes32))
           handler: HANDLER HERE
         - function: deposit((address,uint256),bytes32[])
@@ -64,19 +63,18 @@ dataSources:
           handler: HANDLER HERE
         - function: transferToTreasury()
           handler: HANDLER HERE
-      file: ./src/defiMapping.ts
+      file: DefiRound/DefiRound.wasm
   - kind: ethereum/contract
     name: CoreEvent
     network: mainnet
     source:
-      address: '0x6fA021D294a34eC8F594B1FAa9f670dEDF749808' # CHANGE
+      address: "0x6fA021D294a34eC8F594B1FAa9f670dEDF749808"
       abi: CoreEvent
-      # startBlock: 'START BLOCK HERE'
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
       language: wasm/assemblyscript
-      entities: # May change to specialize for Core
+      entities:
         - Contract
         - Token
         - Oracle
@@ -86,9 +84,9 @@ dataSources:
         - WhiteList
         - SupportedTokens
         - FinalizedAssets
-      abis: 
+      abis:
         - name: CoreEvent
-          file: ./abis/CoreEvent.json
+          file: CoreEvent/abis/CoreEvent.json
       eventHandlers:
         - event: SupportedTokensAdded((address,uint256)[])
           handler: HANDLER HERE
@@ -96,11 +94,11 @@ dataSources:
           handler: HANDLER HERE
         - event: DurationSet((uint256,uint256))
           handler: HANDLER HERE
-        - event:  Deposited(address,(address,uint256)[])
+        - event: Deposited(address,(address,uint256)[])
           handler: HANDLER HERE
         - event: Withdrawn(address,(address,uint256)[])
           handler: HANDLE HERE
-        - event:  RatesPublished((address,uint256,uint256,uint256,uint256,address)[])
+        - event: RatesPublished((address,uint256,uint256,uint256,uint256,address)[])
           handler: HANDLER HERE
         - event: AssetsFinalized(address,(address,uint256,uint256)[])
           handler: HANDLER HERE
@@ -108,7 +106,7 @@ dataSources:
           handler: HANDLER HERE
         - event: WhitelistConfigured((bool,bytes32))
           handler: HANDLER HERE
-      callHandlers: # Will likley not use many of these
+      callHandlers:
         - function: configureWhitelist((bool,bytes32))
           handler: HANDLER HERE
         - function: setDuration(uint256)
@@ -123,7 +121,7 @@ dataSources:
           handler: HANDLER HERE
         - function: finalize((address,bool)[])
           handler: HANDLER HERE
-      file: ./src/coreMapping.ts
+      file: CoreEvent/CoreEvent.wasm
   - kind: ethereum/contract
     name: ERC20
     network: mainnet
@@ -136,8 +134,8 @@ dataSources:
       entities: []
       abis:
         - name: ERC20
-          file: ./abis/ERC20.json
+          file: ERC20/abis/ERC20.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: HANDLER HERE
-      file: ./src/ercMapping.ts
+      file: ERC20/ERC20.wasm

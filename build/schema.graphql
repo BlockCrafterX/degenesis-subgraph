@@ -1,0 +1,77 @@
+"""
+Questions:
+  Do we need RateData?
+  ID can be anything basically
+"""
+type Contract @entity {
+  id: ID!
+  totalUSD: BigInt!
+  depositsOpen: Boolean!
+  withdrawalsOpen: Boolean!
+  privateFarmingOpen: Boolean!
+  balances: [Balance!]!
+}
+
+type Token @entity {
+  id: ID!
+  name: String!
+  symbol: String!
+  oracle: Oracle! # Will be '0x0' for Core
+  pool: Pool! # Pool transferred to, Genesis for Defi reactor for Core
+  total: BigInt!
+  totalUSD: BigInt!
+}
+
+type Oracle @entity {
+  id: ID!
+  token: Token!
+}
+
+type Pool @entity {
+  id: ID!
+  depositedToken: Token!
+  tAsset: Bytes! # Can this be Token?
+                    # Probably not, would have to track pools as well
+                    # Maybe in future if subgraph gets expanded
+  tAssetName: String!
+}
+
+type User @entity {
+  id: ID!
+  totalUSD: BigInt!
+  participant: Boolean!
+  balances: [Balance!]! 
+}
+
+# Keep track of running totals
+type Balance @entity {
+  id: ID!
+  address: Bytes! # Address of user or contract (defi or core)
+  token: Token!
+  total: BigInt!
+  totalUSD: BigInt!
+}
+
+type WhiteList @entity {
+  id: ID!
+  root: Bytes!
+}
+
+type SupportedTokens @entity {
+  id: ID!
+  token: [Token!]!
+}
+
+type FinalizedAsset @entity {
+  id: ID!
+  """
+  Should 'user' be a User entity? Not sure if that makes sense as we don't neccessarily want total 
+  and balances here, something to think about
+  """
+  user: Bytes! 
+  token: Bytes! # Consider making this `Token` type instead of Bytes
+  privateFarming: Boolean! # Genesis for Defi, farming for Core
+  amount: BigInt!
+}
+
+
