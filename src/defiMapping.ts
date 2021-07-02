@@ -2,7 +2,8 @@ import { Address } from "@graphprotocol/graph-ts";
 import { 
   AddSupportedTokensCall,
   Deposited, 
-  Withdrawn
+  Withdrawn, 
+  WhitelistConfigured
 } from "../generated/DefiRound/DefiRound";
 import {
   ERC20
@@ -11,7 +12,8 @@ import {
   Contract,
   Balance, 
   Token,
-  User
+  User,
+  WhiteList
 } from "../generated/schema";
 
 // Consolidate reused code once functions are complete
@@ -48,6 +50,7 @@ export function handleDeposit(event: Deposited): void {
     //withDrawalsOpen
     //privateFarmingOpen
   //balances
+  contract.save();
 
   let balanceId = event.params.depositor.toHex();
   let balance = Balance.load(balanceId);
@@ -60,6 +63,7 @@ export function handleDeposit(event: Deposited): void {
   // token
   balance.total = balance.total.plus(event.params.tokenInfo.amount);
   // totalUSD
+  balance.save();
 
   let userId = event.params.depositor.toHex();
   let user = User.load(userId);
@@ -71,6 +75,7 @@ export function handleDeposit(event: Deposited): void {
   // totalUSD
   user.participant = true;
   // balances
+  user.save();
 }
 
 
@@ -106,6 +111,7 @@ export function handleWithdraw(event: Withdrawn): void {
     //withDrawalsOpen
     //privateFarmingOpen
   //balances
+  contract.save();
 
   let balanceId = event.params.withdrawer.toHex();
   let balance = Balance.load(balanceId);
@@ -118,6 +124,7 @@ export function handleWithdraw(event: Withdrawn): void {
   // token
   balance.total = balance.total.plus(event.params.tokenInfo.amount);
   // totalUSD
+  balance.save();
 
   let userId = event.params.withdrawer.toHex();
   let user = User.load(userId);
@@ -129,7 +136,19 @@ export function handleWithdraw(event: Withdrawn): void {
   // totalUSD
   user.participant = true;
   // balances
+  user.save();
 }  
+
+export function handleWhitelist(event: WhitelistConfigured): void {
+  let whitelistId = event.block.number.toString();
+  let whitelist = WhiteList.load(whitelistId);
+
+  if (whitelist == null) {
+    whitelist = new WhiteList(whitelistId);
+  }
+  whitelist.root = event.params.settings.root;
+  whitelist.enabled = event.params.settings.enabled;
+}
 
 // Example of using call vs event, don't actually need
 export function randomFunc(call: AddSupportedTokensCall): void {

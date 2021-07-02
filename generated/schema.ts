@@ -434,6 +434,15 @@ export class WhiteList extends Entity {
   set root(value: Bytes) {
     this.set("root", Value.fromBytes(value));
   }
+
+  get enabled(): boolean {
+    let value = this.get("enabled");
+    return value.toBoolean();
+  }
+
+  set enabled(value: boolean) {
+    this.set("enabled", Value.fromBoolean(value));
+  }
 }
 
 export class SupportedTokens extends Entity {

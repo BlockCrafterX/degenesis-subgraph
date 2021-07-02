@@ -55,6 +55,7 @@ type Balance @entity {
 type WhiteList @entity {
   id: ID!
   root: Bytes!
+  enabled: Boolean!
 }
 
 type SupportedTokens @entity {
