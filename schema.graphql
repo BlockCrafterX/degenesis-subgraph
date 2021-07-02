@@ -70,7 +70,7 @@ type FinalizedAsset @entity {
   and balances here, something to think about
   """
   user: Bytes! 
-  token: Bytes! # Consider making this `Token` type instead of Bytes
+  token: [Token!]!
   privateFarming: Boolean! # Genesis for Defi, farming for Core
   amount: BigInt!
 }

@@ -4,7 +4,8 @@ import {
   Deposited, 
   Withdrawn, 
   WhitelistConfigured,
-  SupportedTokensAdded
+  SupportedTokensAdded,
+  AssetsFinalized
 } from "../generated/DefiRound/DefiRound";
 import {
   ERC20
@@ -15,7 +16,8 @@ import {
   Token,
   User,
   WhiteList,
-  SupportedTokens
+  SupportedTokens,
+  FinalizedAsset
 } from "../generated/schema";
 
 // Consolidate reused code once functions are complete
@@ -141,6 +143,7 @@ export function handleWithdraw(event: Withdrawn): void {
   user.save();
 }  
 
+// Change to handle updating vs new
 export function handleWhitelist(event: WhitelistConfigured): void {
   let whitelistId = event.block.number.toString();
   let whitelist = WhiteList.load(whitelistId);
@@ -150,8 +153,11 @@ export function handleWhitelist(event: WhitelistConfigured): void {
   }
   whitelist.root = event.params.settings.root;
   whitelist.enabled = event.params.settings.enabled;
+
+  whitelist.save();
 }
 
+// Change to handle updating vs. new
 export function handleSupportedTokens(event: SupportedTokensAdded): void {
   let supportedTokensId = event.block.number.toString();
   let supportedTokens = SupportedTokens.load(supportedTokensId);
@@ -161,6 +167,25 @@ export function handleSupportedTokens(event: SupportedTokensAdded): void {
   }
 
   // token here
+
+  supportedTokens.save();
+}
+
+// Change to handle updating vs. new
+  // Might want a new each time
+export function handleFinalizedAsset(event: AssetsFinalized): void {
+  let finalizedAssetId = event.block.number.toString();  // Should this be user addr?
+  let finalizedAsset = FinalizedAsset.load(finalizedAssetId);
+
+  if (finalizedAsset == null) {
+    new FinalizedAsset(finalizedAssetId);
+  }
+
+  finalizedAsset.user = event.params.claimer;
+  // Token
+  // finalizedAsset.privateFarming
+  finalizedAsset.amount = event.params.assetsMoved;
+  finalizedAsset.save();
 }
 
 // Example of using call vs event, don't actually need

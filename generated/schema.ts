@@ -524,13 +524,13 @@ export class FinalizedAsset extends Entity {
     this.set("user", Value.fromBytes(value));
   }
 
-  get token(): Bytes {
+  get token(): Array<string> {
     let value = this.get("token");
-    return value.toBytes();
+    return value.toStringArray();
   }
 
-  set token(value: Bytes) {
-    this.set("token", Value.fromBytes(value));
+  set token(value: Array<string>) {
+    this.set("token", Value.fromStringArray(value));
   }
 
   get privateFarming(): boolean {
