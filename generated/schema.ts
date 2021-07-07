@@ -162,15 +162,6 @@ export class Token extends Entity {
   set total(value: BigInt) {
     this.set("total", Value.fromBigInt(value));
   }
-
-  get totalUSD(): BigInt {
-    let value = this.get("totalUSD");
-    return value.toBigInt();
-  }
-
-  set totalUSD(value: BigInt) {
-    this.set("totalUSD", Value.fromBigInt(value));
-  }
 }
 
 export class Oracle extends Entity {
@@ -203,13 +194,13 @@ export class Oracle extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get token(): string {
-    let value = this.get("token");
-    return value.toString();
+  get oracleAddr(): Bytes {
+    let value = this.get("oracleAddr");
+    return value.toBytes();
   }
 
-  set token(value: string) {
-    this.set("token", Value.fromString(value));
+  set oracleAddr(value: Bytes) {
+    this.set("oracleAddr", Value.fromBytes(value));
   }
 }
 
@@ -252,22 +243,13 @@ export class Pool extends Entity {
     this.set("depositedToken", Value.fromString(value));
   }
 
-  get tAsset(): Bytes {
-    let value = this.get("tAsset");
-    return value.toBytes();
+  get amountDeposited(): BigInt {
+    let value = this.get("amountDeposited");
+    return value.toBigInt();
   }
 
-  set tAsset(value: Bytes) {
-    this.set("tAsset", Value.fromBytes(value));
-  }
-
-  get tAssetName(): string {
-    let value = this.get("tAssetName");
-    return value.toString();
-  }
-
-  set tAssetName(value: string) {
-    this.set("tAssetName", Value.fromString(value));
+  set amountDeposited(value: BigInt) {
+    this.set("amountDeposited", Value.fromBigInt(value));
   }
 }
 
@@ -299,15 +281,6 @@ export class User extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
-  }
-
-  get totalUSD(): BigInt {
-    let value = this.get("totalUSD");
-    return value.toBigInt();
-  }
-
-  set totalUSD(value: BigInt) {
-    this.set("totalUSD", Value.fromBigInt(value));
   }
 
   get participant(): boolean {
@@ -385,15 +358,6 @@ export class Balance extends Entity {
   set total(value: BigInt) {
     this.set("total", Value.fromBigInt(value));
   }
-
-  get totalUSD(): BigInt {
-    let value = this.get("totalUSD");
-    return value.toBigInt();
-  }
-
-  set totalUSD(value: BigInt) {
-    this.set("totalUSD", Value.fromBigInt(value));
-  }
 }
 
 export class WhiteList extends Entity {
@@ -445,6 +409,46 @@ export class WhiteList extends Entity {
   }
 }
 
+export class TransferToTreasury extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save TransferToTreasury entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save TransferToTreasury entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("TransferToTreasury", id.toString(), this);
+  }
+
+  static load(id: string): TransferToTreasury | null {
+    return store.get("TransferToTreasury", id) as TransferToTreasury | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get balances(): Array<string> {
+    let value = this.get("balances");
+    return value.toStringArray();
+  }
+
+  set balances(value: Array<string>) {
+    this.set("balances", Value.fromStringArray(value));
+  }
+}
+
 export class SupportedTokens extends Entity {
   constructor(id: string) {
     super();
@@ -475,13 +479,13 @@ export class SupportedTokens extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get token(): Array<string> {
+  get token(): string {
     let value = this.get("token");
-    return value.toStringArray();
+    return value.toString();
   }
 
-  set token(value: Array<string>) {
-    this.set("token", Value.fromStringArray(value));
+  set token(value: string) {
+    this.set("token", Value.fromString(value));
   }
 }
 
@@ -513,15 +517,6 @@ export class FinalizedAsset extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
-  }
-
-  get user(): Bytes {
-    let value = this.get("user");
-    return value.toBytes();
-  }
-
-  set user(value: Bytes) {
-    this.set("user", Value.fromBytes(value));
   }
 
   get token(): Array<string> {

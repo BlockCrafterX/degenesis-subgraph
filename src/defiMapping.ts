@@ -1,199 +1,287 @@
-import { Address } from "@graphprotocol/graph-ts";
+import { log } from '@graphprotocol/graph-ts';
 import { 
-  AddSupportedTokensCall,
+  Address, 
+  BigInt, 
+  BigDecimal 
+} from "@graphprotocol/graph-ts";
+import { 
+  DefiRound,
   Deposited, 
   Withdrawn, 
   WhitelistConfigured,
   SupportedTokensAdded,
-  AssetsFinalized
+  AssetsFinalized,
+  GenesisTransfer,
+  TreasuryTransfer
 } from "../generated/DefiRound/DefiRound";
 import {
   ERC20
 } from "../generated/ERC20/ERC20";
 import {
+  Pool,
   Contract,
   Balance, 
   Token,
   User,
   WhiteList,
   SupportedTokens,
-  FinalizedAsset
+  FinalizedAsset,
+  Oracle,
+  TransferToTreasury
 } from "../generated/schema";
 
-// Consolidate reused code once functions are complete
+const SECONDS_IN_WEEK = 604800;
 
-// Can handle update User, Contract, Balance entities
-// Probably need to use ERC20 here to get name and symbol of Token
+// Consolidate reused code once functions are complete
+// CHECK SAVES
+
 export function handleDeposit(event: Deposited): void {
   let tokenId = event.params.tokenInfo.token.toHex();
   let token = Token.load(tokenId);
 
-  if (token == null) {
-    token = new Token(tokenId);
-  }
+  let defiContract = DefiRound.bind(event.address);
 
-  let erc20 = ERC20.bind(Address.fromString(tokenId));
-  token.name = erc20.name();
-  token.symbol = erc20.symbol();
-  // Oracle
-  // Pool
+  if (!token) {
+    let genesis = defiContract.getGenesisPools([event.params.tokenInfo.token])[0];
+    token = new Token(tokenId);
+    let erc20 = ERC20.bind(Address.fromString(tokenId));
+    token.name = erc20.name();
+    token.symbol = erc20.symbol();
+    token.oracle = Oracle.load(event.params.tokenInfo.token.toHex()).id;
+    token.pool = Pool.load(genesis.toHex()).id;
+  }
   token.total = token.total.plus(event.params.tokenInfo.amount);
-  // totalUSD
-  token.save();
 
   let contractId = event.address.toHex();
   let contract = Contract.load(contractId);
 
-  if(contract == null) {
+  if(!contract) {
     contract = new Contract(contractId);
+    contract.depositsOpen = true;
+    contract.withdrawalsOpen = false;
+    contract.privateFarmingOpen = false;
   }
 
-  //totalUSD
-  //Once defi finalized
-    //depoistsOpen
-    //withDrawalsOpen
-    //privateFarmingOpen
-  //balances
-  contract.save();
+  let contractBalanceId = event.address.toHex() + event.params.tokenInfo.token.toHex()
+  let contractBalances = contract.balances;
+  let contractBalance = Balance.load(contractBalanceId);
 
-  let balanceId = event.params.depositor.toHex();
-  let balance = Balance.load(balanceId);
-
-  if (balance == null) {
-    balance = new Balance(balanceId);
+  if (!contractBalance) {
+    contractBalance = new Balance(contractBalanceId);
+    contractBalance.address = event.address;
+    contractBalance.token = token.id;
+    contractBalances.push(contractBalance.id);
+    contract.balances = contractBalances;
   }
 
-  balance.address = event.params.depositor;
-  // token
-  balance.total = balance.total.plus(event.params.tokenInfo.amount);
-  // totalUSD
-  balance.save();
+  contractBalance.total = contractBalance.total.plus(event.params.tokenInfo.amount);
 
   let userId = event.params.depositor.toHex();
   let user = User.load(userId);
 
-  if (user == null) {
-    user = new User(userId)
+  if (!user) {
+    user = new User(userId);
+    user.participant = true;
   }
 
-  // totalUSD
-  user.participant = true;
-  // balances
+  let userBalanceId = event.params.depositor.toHex() + event.params.tokenInfo.token.toHex();
+  let userBalance = Balance.load(userBalanceId);
+
+  if (!userBalance) {
+    userBalance = new Balance(userBalanceId);
+    userBalance.address = event.params.depositor;
+    userBalance.token = tokenId;
+    userBalance.total = userBalance.total.plus(event.params.tokenInfo.amount);
+
+    let userBalancesArr = user.balances;
+    userBalancesArr.push(userBalance.id);
+    user.balances = userBalancesArr;
+  } 
+
+  userBalance.total = userBalance.total.plus(event.params.tokenInfo.amount);
+
   user.save();
+  token.save();
+  contract.save();
+  userBalance.save();
+  contractBalance.save();
 }
 
-
-
-// Can handle update User, Contract, Balance entities
 export function handleWithdraw(event: Withdrawn): void {
   let tokenId = event.params.tokenInfo.token.toHex();
-  let token = Token.load(tokenId)
+  let token = Token.load(tokenId);
 
-  if (token == null) {
+  let defiContract = DefiRound.bind(event.address);
+
+  if (!token) {
+    let genesis = defiContract.getGenesisPools([event.params.tokenInfo.token])[0];
     token = new Token(tokenId);
+    let erc20 = ERC20.bind(Address.fromString(tokenId));
+    token.name = erc20.name();
+    token.symbol = erc20.symbol();
+    token.oracle = Oracle.load(event.params.tokenInfo.token.toHex()).id;
+    token.pool = Pool.load(genesis.toHex()).id;
   }
-
-  let erc20 = ERC20.bind(Address.fromString(tokenId));
-  token.name = erc20.name();
-  token.symbol = erc20.symbol();
-  // Oracle
-  // Pool
-  token.total = token.total.minus(event.params.tokenInfo.amount);
-  //totalUSD
-  token.save();
+  token.total = token.total.plus(event.params.tokenInfo.amount);
 
   let contractId = event.address.toHex();
   let contract = Contract.load(contractId);
 
-  if(contract == null) {
+  if(!contract) {
     contract = new Contract(contractId);
+    contract.depositsOpen = true;
+    contract.withdrawalsOpen = false;
+    contract.privateFarmingOpen = false;
   }
 
-  //totalUSD
-  //Once defi finalized
-    //depoistsOpen
-    //withDrawalsOpen
-    //privateFarmingOpen
-  //balances
-  contract.save();
+  let contractBalanceId = event.address.toHex() + event.params.tokenInfo.token.toHex()
+  let contractBalances = contract.balances;
+  let contractBalance = Balance.load(contractBalanceId);
 
-  let balanceId = event.params.withdrawer.toHex();
-  let balance = Balance.load(balanceId);
-
-  if (balance == null) {
-    balance = new Balance(balanceId);
+  if (!contractBalance) {
+    contractBalance = new Balance(contractBalanceId);
+    contractBalance.address = event.address;
+    contractBalance.token = token.id;
+    contractBalances.push(contractBalance.id);
+    contract.balances = contractBalances;
   }
 
-  balance.address = event.params.withdrawer;
-  // token
-  balance.total = balance.total.plus(event.params.tokenInfo.amount);
-  // totalUSD
-  balance.save();
+  contractBalance.total = contractBalance.total.plus(event.params.tokenInfo.amount);
 
   let userId = event.params.withdrawer.toHex();
   let user = User.load(userId);
 
-  if (user == null) {
-    user = new User(userId)
+  if (!user) {
+    user = new User(userId);
+    user.participant = true;
   }
 
-  // totalUSD
-  user.participant = true;
-  // balances
+  let userBalanceId = event.params.withdrawer.toHex() + event.params.tokenInfo.token.toHex();
+  let userBalance = Balance.load(userBalanceId);
+
+  if (!userBalance) {
+    userBalance = new Balance(userBalanceId);
+    userBalance.address = event.params.withdrawer;
+    userBalance.token = tokenId;
+    userBalance.total = userBalance.total.plus(event.params.tokenInfo.amount);
+
+    let userBalancesArr = user.balances;
+    userBalancesArr.push(userBalance.id);
+    user.balances = userBalancesArr;
+  } 
+
+  userBalance.total = userBalance.total.minus(event.params.tokenInfo.amount);
+
   user.save();
+  token.save();
+  contract.save();
+  userBalance.save();
+  contractBalance.save();
 }  
 
-// Change to handle updating vs new
 export function handleWhitelist(event: WhitelistConfigured): void {
-  let whitelistId = event.block.number.toString();
+  let whitelistId = event.address.toHex();
   let whitelist = WhiteList.load(whitelistId);
 
-  if (whitelist == null) {
+  if (!whitelist) {
     whitelist = new WhiteList(whitelistId);
   }
+
   whitelist.root = event.params.settings.root;
   whitelist.enabled = event.params.settings.enabled;
-
   whitelist.save();
 }
 
-// Change to handle updating vs. new
 export function handleSupportedTokens(event: SupportedTokensAdded): void {
-  let supportedTokensId = event.block.number.toString();
-  let supportedTokens = SupportedTokens.load(supportedTokensId);
 
-  if (supportedTokens == null) {
-    supportedTokens = new SupportedTokens(supportedTokensId)
+  for (let i = 0; i < event.params.tokenData.length; i++ ) {
+    let supportedTokenId = event.params.tokenData[0].token.toHex();
+    let supportedTokenEntity = new SupportedTokens(supportedTokenId);
+
+    let tokenId = event.params.tokenData[i].token.toHex();
+    let tokenEntity = new Token(tokenId);
+
+    let erc20 = ERC20.bind(Address.fromString(tokenId));
+    tokenEntity.name = erc20.name();
+    tokenEntity.symbol = erc20.symbol();
+    tokenEntity.total = BigInt.fromI32(0);
+
+    let oracleId = event.params.tokenData[i].token.toHexString();
+    let oracleEntity = new Oracle(oracleId);
+
+    supportedTokenEntity.token = tokenEntity.id;
+    oracleEntity.oracleAddr = event.params.tokenData[i].oracle;
+    tokenEntity.oracle = oracleEntity.id;
+
+    let poolId = event.params.tokenData[i].genesis.toHex();
+    let poolEntity = new Pool(poolId);
+    poolEntity.depositedToken = tokenEntity.id;
+    poolEntity.amountDeposited = BigInt.fromI32(0);
+    tokenEntity.pool = poolEntity.id; 
+
+    supportedTokenEntity.save();
+    oracleEntity.save();
+    tokenEntity.save();
+    poolEntity.save();
   }
-
-  // token here
-
-  supportedTokens.save();
 }
 
-// Change to handle updating vs. new
-  // Might want a new each time
 export function handleFinalizedAsset(event: AssetsFinalized): void {
-  let finalizedAssetId = event.block.number.toString();  // Should this be user addr?
-  let finalizedAsset = FinalizedAsset.load(finalizedAssetId);
+  let finalizedAssetId = event.params.claimer.toHex();
+  let finalizedAsset = new FinalizedAsset(finalizedAssetId);
+  
+  let tokens = finalizedAsset.token;
+  tokens.push(event.params.token.toHex());
+  finalizedAsset.token = tokens;
 
-  if (finalizedAsset == null) {
-    new FinalizedAsset(finalizedAssetId);
+  finalizedAsset.amount = event.params.assetsMoved;
+
+  let contractId = event.address.toHex();
+  let defiContract = DefiRound.bind(Address.fromString(contractId));
+  let contract: Contract;
+  if (event.block.timestamp > defiContract.lastLookExpiration()
+    .plus(BigInt.fromI32(2 * SECONDS_IN_WEEK))) 
+  {
+    contract = Contract.load(contractId);
+    contract.depositsOpen = false;
+    contract.withdrawalsOpen = false;
+    contract.privateFarmingOpen = false;
   }
 
-  finalizedAsset.user = event.params.claimer;
-  // Token
-  // finalizedAsset.privateFarming
-  finalizedAsset.amount = event.params.assetsMoved;
   finalizedAsset.save();
+  contract.save();
 }
 
-// Example of using call vs event, don't actually need
-export function randomFunc(call: AddSupportedTokensCall): void {
+// Waiting on confirmation on changing GenesisTransfer event
+export function handleGenesisTransfer(event: GenesisTransfer): void {
+  let finalizedAssetId = event.params.user.toHex();
+  let finalizedAssetEntity = new FinalizedAsset(finalizedAssetId);
 
+  finalizedAssetEntity.privateFarming = true;
+  finalizedAssetEntity.save();
+
+  let defiContract = DefiRound.bind(event.address);
+  // let genesis = defiContract.getGenesisPools(event.)
+
+  // Pool here, using pool addr
 }
 
-// export function handleContract(): void {
-//   let contract = new Contract();
-//   contract.save();
-// }
+export function handleTreasuryTransfer(event: TreasuryTransfer): void {
+  let transferId = event.block.number.toHex();
+  let transferEntity = new TransferToTreasury(transferId);
+
+  let defiContract = DefiRound.bind(event.address);
+  for (let i = 0; i < event.params.tokens.length ; i++) {
+    let balances = transferEntity.balances;
+    let balanceEntity = new Balance(defiContract.treasury().toHex() + event.params.tokens[i].token);
+    balanceEntity.address = event.params.tokens[i].token;
+    balanceEntity.token = Token.load(event.params.tokens[i].token.toHex()).id;
+    balanceEntity.total = balanceEntity.total.plus(event.params.tokens[i].amount);
+    balances.push(balanceEntity.id);
+  }
+
+  let contract = Contract.load(event.address.toHex());
+  contract.depositsOpen = false;
+  contract.withdrawalsOpen = false;
+  contract.privateFarmingOpen = true;
+} 

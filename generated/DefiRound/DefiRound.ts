@@ -240,6 +240,22 @@ export class TreasuryTransfer__Params {
   constructor(event: TreasuryTransfer) {
     this._event = event;
   }
+
+  get tokens(): Array<TreasuryTransferTokensStruct> {
+    return this._event.parameters[0].value.toTupleArray<
+      TreasuryTransferTokensStruct
+    >();
+  }
+}
+
+export class TreasuryTransferTokensStruct extends ethereum.Tuple {
+  get token(): Address {
+    return this[0].toAddress();
+  }
+
+  get amount(): BigInt {
+    return this[1].toBigInt();
+  }
 }
 
 export class WhitelistConfigured extends ethereum.Event {

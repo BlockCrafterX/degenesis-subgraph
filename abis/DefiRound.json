@@ -219,7 +219,26 @@
   },
   {
     "anonymous": false,
-    "inputs": [],
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct IDefiRound.TokenData[]",
+        "name": "tokens",
+        "type": "tuple[]"
+      }
+    ],
     "name": "TreasuryTransfer",
     "type": "event"
   },

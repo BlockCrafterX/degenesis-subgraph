@@ -82,6 +82,34 @@ export class DepositedTokenInfoStruct extends ethereum.Tuple {
   }
 }
 
+export class DurationIncreased extends ethereum.Event {
+  get params(): DurationIncreased__Params {
+    return new DurationIncreased__Params(this);
+  }
+}
+
+export class DurationIncreased__Params {
+  _event: DurationIncreased;
+
+  constructor(event: DurationIncreased) {
+    this._event = event;
+  }
+
+  get duration(): DurationIncreasedDurationStruct {
+    return this._event.parameters[0].value.toTuple() as DurationIncreasedDurationStruct;
+  }
+}
+
+export class DurationIncreasedDurationStruct extends ethereum.Tuple {
+  get startingBlock(): BigInt {
+    return this[0].toBigInt();
+  }
+
+  get blockDuration(): BigInt {
+    return this[1].toBigInt();
+  }
+}
+
 export class DurationSet extends ethereum.Event {
   get params(): DurationSet__Params {
     return new DurationSet__Params(this);
@@ -178,6 +206,24 @@ export class RatesPublishedRatesDataStruct extends ethereum.Tuple {
   }
 }
 
+export class SetNoSwap extends ethereum.Event {
+  get params(): SetNoSwap__Params {
+    return new SetNoSwap__Params(this);
+  }
+}
+
+export class SetNoSwap__Params {
+  _event: SetNoSwap;
+
+  constructor(event: SetNoSwap) {
+    this._event = event;
+  }
+
+  get tokens(): Array<Address> {
+    return this._event.parameters[0].value.toAddressArray();
+  }
+}
+
 export class SupportedTokensAdded extends ethereum.Event {
   get params(): SupportedTokensAdded__Params {
     return new SupportedTokensAdded__Params(this);
@@ -205,6 +251,10 @@ export class SupportedTokensAddedTokenDataStruct extends ethereum.Tuple {
 
   get maxUserLimit(): BigInt {
     return this[1].toBigInt();
+  }
+
+  get systemFinalized(): boolean {
+    return this[2].toBoolean();
   }
 }
 
@@ -423,21 +473,28 @@ export class CoreEvent__getSupportedTokensResultSupportedTokensArrayStruct exten
   get maxUserLimit(): BigInt {
     return this[1].toBigInt();
   }
+
+  get systemFinalized(): boolean {
+    return this[2].toBoolean();
+  }
 }
 
 export class CoreEvent__supportedTokensResult {
   value0: Address;
   value1: BigInt;
+  value2: boolean;
 
-  constructor(value0: Address, value1: BigInt) {
+  constructor(value0: Address, value1: BigInt, value2: boolean) {
     this.value0 = value0;
     this.value1 = value1;
+    this.value2 = value2;
   }
 
   toMap(): TypedMap<string, ethereum.Value> {
     let map = new TypedMap<string, ethereum.Value>();
     map.set("value0", ethereum.Value.fromAddress(this.value0));
     map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
+    map.set("value2", ethereum.Value.fromBoolean(this.value2));
     return map;
   }
 }
@@ -673,7 +730,7 @@ export class CoreEvent extends ethereum.SmartContract {
   > {
     let result = super.call(
       "getSupportedTokens",
-      "getSupportedTokens():((address,uint256)[])",
+      "getSupportedTokens():((address,uint256,bool)[])",
       []
     );
 
@@ -687,7 +744,7 @@ export class CoreEvent extends ethereum.SmartContract {
   > {
     let result = super.tryCall(
       "getSupportedTokens",
-      "getSupportedTokens():((address,uint256)[])",
+      "getSupportedTokens():((address,uint256,bool)[])",
       []
     );
     if (result.reverted) {
@@ -716,14 +773,14 @@ export class CoreEvent extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
-  ratesPublished(): boolean {
-    let result = super.call("ratesPublished", "ratesPublished():(bool)", []);
+  stage1Locked(): boolean {
+    let result = super.call("stage1Locked", "stage1Locked():(bool)", []);
 
     return result[0].toBoolean();
   }
 
-  try_ratesPublished(): ethereum.CallResult<boolean> {
-    let result = super.tryCall("ratesPublished", "ratesPublished():(bool)", []);
+  try_stage1Locked(): ethereum.CallResult<boolean> {
+    let result = super.tryCall("stage1Locked", "stage1Locked():(bool)", []);
     if (result.reverted) {
       return new ethereum.CallResult();
     }
@@ -734,13 +791,14 @@ export class CoreEvent extends ethereum.SmartContract {
   supportedTokens(param0: Address): CoreEvent__supportedTokensResult {
     let result = super.call(
       "supportedTokens",
-      "supportedTokens(address):(address,uint256)",
+      "supportedTokens(address):(address,uint256,bool)",
       [ethereum.Value.fromAddress(param0)]
     );
 
     return new CoreEvent__supportedTokensResult(
       result[0].toAddress(),
-      result[1].toBigInt()
+      result[1].toBigInt(),
+      result[2].toBoolean()
     );
   }
 
@@ -749,7 +807,7 @@ export class CoreEvent extends ethereum.SmartContract {
   ): ethereum.CallResult<CoreEvent__supportedTokensResult> {
     let result = super.tryCall(
       "supportedTokens",
-      "supportedTokens(address):(address,uint256)",
+      "supportedTokens(address):(address,uint256,bool)",
       [ethereum.Value.fromAddress(param0)]
     );
     if (result.reverted) {
@@ -759,7 +817,8 @@ export class CoreEvent extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(
       new CoreEvent__supportedTokensResult(
         value[0].toAddress(),
-        value[1].toBigInt()
+        value[1].toBigInt(),
+        value[2].toBoolean()
       )
     );
   }
@@ -879,8 +938,12 @@ export class ConstructorCall__Inputs {
     this._call = call;
   }
 
+  get treasury(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
   get tokensToSupport(): Array<ConstructorCallTokensToSupportStruct> {
-    return this._call.inputValues[0].value.toTupleArray<
+    return this._call.inputValues[1].value.toTupleArray<
       ConstructorCallTokensToSupportStruct
     >();
   }
@@ -901,6 +964,10 @@ export class ConstructorCallTokensToSupportStruct extends ethereum.Tuple {
 
   get maxUserLimit(): BigInt {
     return this[1].toBigInt();
+  }
+
+  get systemFinalized(): boolean {
+    return this[2].toBoolean();
   }
 }
 
@@ -943,6 +1010,10 @@ export class AddSupportedTokensCallTokensToSupportStruct extends ethereum.Tuple 
 
   get maxUserLimit(): BigInt {
     return this[1].toBigInt();
+  }
+
+  get systemFinalized(): boolean {
+    return this[2].toBoolean();
   }
 }
 
@@ -1074,6 +1145,36 @@ export class FinalizeCallTokensStruct extends ethereum.Tuple {
   }
 }
 
+export class IncreaseDurationCall extends ethereum.Call {
+  get inputs(): IncreaseDurationCall__Inputs {
+    return new IncreaseDurationCall__Inputs(this);
+  }
+
+  get outputs(): IncreaseDurationCall__Outputs {
+    return new IncreaseDurationCall__Outputs(this);
+  }
+}
+
+export class IncreaseDurationCall__Inputs {
+  _call: IncreaseDurationCall;
+
+  constructor(call: IncreaseDurationCall) {
+    this._call = call;
+  }
+
+  get _blockDuration(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+}
+
+export class IncreaseDurationCall__Outputs {
+  _call: IncreaseDurationCall;
+
+  constructor(call: IncreaseDurationCall) {
+    this._call = call;
+  }
+}
+
 export class RenounceOwnershipCall extends ethereum.Call {
   get inputs(): RenounceOwnershipCall__Inputs {
     return new RenounceOwnershipCall__Inputs(this);
@@ -1126,6 +1227,36 @@ export class SetDurationCall__Outputs {
   _call: SetDurationCall;
 
   constructor(call: SetDurationCall) {
+    this._call = call;
+  }
+}
+
+export class SetNoSwapCall extends ethereum.Call {
+  get inputs(): SetNoSwapCall__Inputs {
+    return new SetNoSwapCall__Inputs(this);
+  }
+
+  get outputs(): SetNoSwapCall__Outputs {
+    return new SetNoSwapCall__Outputs(this);
+  }
+}
+
+export class SetNoSwapCall__Inputs {
+  _call: SetNoSwapCall;
+
+  constructor(call: SetNoSwapCall) {
+    this._call = call;
+  }
+
+  get tokens(): Array<Address> {
+    return this._call.inputValues[0].value.toAddressArray();
+  }
+}
+
+export class SetNoSwapCall__Outputs {
+  _call: SetNoSwapCall;
+
+  constructor(call: SetNoSwapCall) {
     this._call = call;
   }
 }
@@ -1235,10 +1366,8 @@ export class TransferToTreasuryCall__Inputs {
     this._call = call;
   }
 
-  get tokens(): Array<TransferToTreasuryCallTokensStruct> {
-    return this._call.inputValues[0].value.toTupleArray<
-      TransferToTreasuryCallTokensStruct
-    >();
+  get tokens(): Array<Address> {
+    return this._call.inputValues[0].value.toAddressArray();
   }
 }
 
@@ -1247,16 +1376,6 @@ export class TransferToTreasuryCall__Outputs {
 
   constructor(call: TransferToTreasuryCall) {
     this._call = call;
-  }
-}
-
-export class TransferToTreasuryCallTokensStruct extends ethereum.Tuple {
-  get token(): Address {
-    return this[0].toAddress();
-  }
-
-  get amount(): BigInt {
-    return this[1].toBigInt();
   }
 }
 
