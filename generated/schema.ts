@@ -449,46 +449,6 @@ export class TransferToTreasury extends Entity {
   }
 }
 
-export class SupportedTokens extends Entity {
-  constructor(id: string) {
-    super();
-    this.set("id", Value.fromString(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id !== null, "Cannot save SupportedTokens entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save SupportedTokens entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("SupportedTokens", id.toString(), this);
-  }
-
-  static load(id: string): SupportedTokens | null {
-    return store.get("SupportedTokens", id) as SupportedTokens | null;
-  }
-
-  get id(): string {
-    let value = this.get("id");
-    return value.toString();
-  }
-
-  set id(value: string) {
-    this.set("id", Value.fromString(value));
-  }
-
-  get token(): string {
-    let value = this.get("token");
-    return value.toString();
-  }
-
-  set token(value: string) {
-    this.set("token", Value.fromString(value));
-  }
-}
-
 export class FinalizedAsset extends Entity {
   constructor(id: string) {
     super();

@@ -1,8 +1,6 @@
-import { log } from '@graphprotocol/graph-ts';
 import { 
   Address, 
-  BigInt, 
-  BigDecimal 
+  BigInt 
 } from "@graphprotocol/graph-ts";
 import { 
   DefiRound,
@@ -24,7 +22,6 @@ import {
   Token,
   User,
   WhiteList,
-  SupportedTokens,
   FinalizedAsset,
   Oracle,
   TransferToTreasury
@@ -196,10 +193,6 @@ export function handleWhitelist(event: WhitelistConfigured): void {
 export function handleSupportedTokens(event: SupportedTokensAdded): void {
 
   for (let i = 0; i < event.params.tokenData.length; i++ ) {
-    let supportedTokenIdArr = event.params.tokenData;
-    let supportedTokenId = supportedTokenIdArr[i].token.toHex();
-    let supportedTokenEntity = new SupportedTokens(supportedTokenId);
-
     let tokenIdArr = event.params.tokenData;
     let tokenId = tokenIdArr[i].token.toHex();
     let tokenEntity = new Token(tokenId);
@@ -213,7 +206,6 @@ export function handleSupportedTokens(event: SupportedTokensAdded): void {
     let oracleId = oracleIdArr[i].token.toHexString();
     let oracleEntity = new Oracle(oracleId);
 
-    supportedTokenEntity.token = tokenEntity.id;
     oracleEntity.oracleAddr = oracleIdArr[i].oracle;
     tokenEntity.oracle = oracleEntity.id;
 
@@ -224,7 +216,6 @@ export function handleSupportedTokens(event: SupportedTokensAdded): void {
     poolEntity.amountDeposited = BigInt.fromI32(0);
     tokenEntity.pool = poolEntity.id; 
 
-    supportedTokenEntity.save();
     oracleEntity.save();
     tokenEntity.save();
     poolEntity.save();

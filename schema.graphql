@@ -52,11 +52,6 @@ type TransferToTreasury @entity {
   balances: [Balance!]!
 }
 
-type SupportedTokens @entity {  # Can likely get rid of this and just use token
-  id: ID!
-  token: Token!
-}
-
 type FinalizedAsset @entity {
   id: ID!
   token: [Token!]!
