@@ -264,31 +264,33 @@ export function handleGenesisTransfer(event: GenesisTransfer): void {
   finalizedAssetEntity.save();
 
   let defiContract = DefiRound.bind(event.address);
+  // This
   let genesisArr = defiContract.getGenesisPools([]);
   let genesis = genesisArr[0];
   let genesisEntity = Pool.load(genesis.toHex());
   genesisEntity.amountDeposited = genesisEntity.amountDeposited.plus(event.params.amountTransferred);
 }
 
-// export function handleTreasuryTransfer(event: TreasuryTransfer): void {
-//   let transferId = event.block.number.toHex();
-//   let transferEntity = new TransferToTreasury(transferId);
+export function handleTreasuryTransfer(event: TreasuryTransfer): void {
+  let transferId = event.block.number.toHex();
+  let transferEntity = new TransferToTreasury(transferId);
 
-//   let defiContract = DefiRound.bind(event.address);
-//   for (let i = 0; i < event.params.tokens.length ; i++) {
-//     let balances = transferEntity.balances;
-//     let balanceEntity = new Balance(defiContract.treasury().toHex() + event.params.tokens[i].token);
-//     balanceEntity.address = event.params.tokens[i].token;
-//     balanceEntity.token = Token.load(event.params.tokens[i].token.toHex()).id;
-//     balanceEntity.total = balanceEntity.total.plus(event.params.tokens[i].amount);
-//     balances.push(balanceEntity.id);
-//   }
+  let defiContract = DefiRound.bind(event.address);
+  for (let i = 0; i < event.params.tokens.length ; i++) {
+    let tokenArr = event.params.tokens;
+    let balances = transferEntity.balances;
+    let balanceEntity = new Balance(defiContract.treasury().toHex() + tokenArr[i].token.toHex());
+    balanceEntity.address = tokenArr[i].token;
+    balanceEntity.token = Token.load(tokenArr[i].token.toHex()).id;
+    balanceEntity.total = balanceEntity.total.plus(tokenArr[i].amount);
+    balances.push(balanceEntity.id);
+  }
 
-//   let contract = Contract.load(event.address.toHex());
-//   contract.depositsOpen = false;
-//   contract.withdrawalsOpen = false;
-//   contract.privateFarmingOpen = true;
+  let contract = Contract.load(event.address.toHex());
+  contract.depositsOpen = false;
+  contract.withdrawalsOpen = false;
+  contract.privateFarmingOpen = true;
 
-//   transferEntity.save();
-//   contract.save();
-// } 
+  transferEntity.save();
+  contract.save();
+} 
