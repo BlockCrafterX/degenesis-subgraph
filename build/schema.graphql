@@ -1,8 +1,3 @@
-"""
-Questions:
-  Do we need RateData?
-  ID can be anything basically
-"""
 type Contract @entity {
   id: ID!
   totalUSD: BigInt!
@@ -19,57 +14,51 @@ type Token @entity {
   oracle: Oracle! # Will be '0x0' for Core
   pool: Pool! # Pool transferred to, Genesis for Defi reactor for Core
   total: BigInt!
-  totalUSD: BigInt!
 }
 
-type Oracle @entity {
-  id: ID!
-  token: Token!
+type Oracle @entity {  # Change to have id be oracle address and token address be token entity
+  id: ID! # token address
+  oracleAddr: Bytes!
 }
 
 type Pool @entity {
-  id: ID!
+  id: ID! # pool address
   depositedToken: Token!
-  tAsset: Bytes! # Can this be Token?
-                    # Probably not, would have to track pools as well
-                    # Maybe in future if subgraph gets expanded
-  tAssetName: String!
+  amountDeposited: BigInt!
 }
 
 type User @entity {
   id: ID!
-  totalUSD: BigInt!
   participant: Boolean!
   balances: [Balance!]! 
 }
 
 # Keep track of running totals
 type Balance @entity {
-  id: ID!
+  id: ID! # user address + token address.  Done like this for core, can change to just user addr for Defi
   address: Bytes! # Address of user or contract (defi or core)
   token: Token!
   total: BigInt!
-  totalUSD: BigInt!
 }
 
 type WhiteList @entity {
-  id: ID!
+  id: ID! # contract addr
   root: Bytes!
   enabled: Boolean!
 }
 
-type SupportedTokens @entity {
+type TransferToTreasury @entity {
   id: ID!
-  token: [Token!]!
+  balances: [Balance!]!
+}
+
+type SupportedTokens @entity {  # Can likely get rid of this and just use token
+  id: ID!
+  token: Token!
 }
 
 type FinalizedAsset @entity {
   id: ID!
-  """
-  Should 'user' be a User entity? Not sure if that makes sense as we don't neccessarily want total 
-  and balances here, something to think about
-  """
-  user: Bytes! 
   token: [Token!]!
   privateFarming: Boolean! # Genesis for Defi, farming for Core
   amount: BigInt!

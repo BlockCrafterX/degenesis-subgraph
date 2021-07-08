@@ -188,17 +188,20 @@ export function handleWhitelist(event: WhitelistConfigured): void {
   }
 
   whitelist.root = event.params.settings.root;
-  whitelist.enabled = event.params.settings.enabled;
+  whitelist.enabled = event.params.settings.enabled; 
   whitelist.save();
 }
 
+// indexOf
 export function handleSupportedTokens(event: SupportedTokensAdded): void {
 
   for (let i = 0; i < event.params.tokenData.length; i++ ) {
-    let supportedTokenId = event.params.tokenData[0].token.toHex();
+    let supportedTokenIdArr = event.params.tokenData;
+    let supportedTokenId = supportedTokenIdArr[i].token.toHex();
     let supportedTokenEntity = new SupportedTokens(supportedTokenId);
 
-    let tokenId = event.params.tokenData[i].token.toHex();
+    let tokenIdArr = event.params.tokenData;
+    let tokenId = tokenIdArr[i].token.toHex();
     let tokenEntity = new Token(tokenId);
 
     let erc20 = ERC20.bind(Address.fromString(tokenId));
@@ -206,14 +209,16 @@ export function handleSupportedTokens(event: SupportedTokensAdded): void {
     tokenEntity.symbol = erc20.symbol();
     tokenEntity.total = BigInt.fromI32(0);
 
-    let oracleId = event.params.tokenData[i].token.toHexString();
+    let oracleIdArr = event.params.tokenData;
+    let oracleId = oracleIdArr[i].token.toHexString();
     let oracleEntity = new Oracle(oracleId);
 
     supportedTokenEntity.token = tokenEntity.id;
-    oracleEntity.oracleAddr = event.params.tokenData[i].oracle;
+    oracleEntity.oracleAddr = oracleIdArr[i].oracle;
     tokenEntity.oracle = oracleEntity.id;
 
-    let poolId = event.params.tokenData[i].genesis.toHex();
+    let poolIdArr = event.params.tokenData;
+    let poolId = poolIdArr[i].genesis.toHex();
     let poolEntity = new Pool(poolId);
     poolEntity.depositedToken = tokenEntity.id;
     poolEntity.amountDeposited = BigInt.fromI32(0);
@@ -238,11 +243,10 @@ export function handleFinalizedAsset(event: AssetsFinalized): void {
 
   let contractId = event.address.toHex();
   let defiContract = DefiRound.bind(Address.fromString(contractId));
-  let contract: Contract;
+  let contract = Contract.load(contractId)
   if (event.block.timestamp > defiContract.lastLookExpiration()
     .plus(BigInt.fromI32(2 * SECONDS_IN_WEEK))) 
   {
-    contract = Contract.load(contractId);
     contract.depositsOpen = false;
     contract.withdrawalsOpen = false;
     contract.privateFarmingOpen = false;
@@ -252,7 +256,6 @@ export function handleFinalizedAsset(event: AssetsFinalized): void {
   contract.save();
 }
 
-// Waiting on confirmation on changing GenesisTransfer event
 export function handleGenesisTransfer(event: GenesisTransfer): void {
   let finalizedAssetId = event.params.user.toHex();
   let finalizedAssetEntity = new FinalizedAsset(finalizedAssetId);
@@ -261,27 +264,31 @@ export function handleGenesisTransfer(event: GenesisTransfer): void {
   finalizedAssetEntity.save();
 
   let defiContract = DefiRound.bind(event.address);
-  // let genesis = defiContract.getGenesisPools(event.)
-
-  // Pool here, using pool addr
+  let genesisArr = defiContract.getGenesisPools([]);
+  let genesis = genesisArr[0];
+  let genesisEntity = Pool.load(genesis.toHex());
+  genesisEntity.amountDeposited = genesisEntity.amountDeposited.plus(event.params.amountTransferred);
 }
 
-export function handleTreasuryTransfer(event: TreasuryTransfer): void {
-  let transferId = event.block.number.toHex();
-  let transferEntity = new TransferToTreasury(transferId);
+// export function handleTreasuryTransfer(event: TreasuryTransfer): void {
+//   let transferId = event.block.number.toHex();
+//   let transferEntity = new TransferToTreasury(transferId);
 
-  let defiContract = DefiRound.bind(event.address);
-  for (let i = 0; i < event.params.tokens.length ; i++) {
-    let balances = transferEntity.balances;
-    let balanceEntity = new Balance(defiContract.treasury().toHex() + event.params.tokens[i].token);
-    balanceEntity.address = event.params.tokens[i].token;
-    balanceEntity.token = Token.load(event.params.tokens[i].token.toHex()).id;
-    balanceEntity.total = balanceEntity.total.plus(event.params.tokens[i].amount);
-    balances.push(balanceEntity.id);
-  }
+//   let defiContract = DefiRound.bind(event.address);
+//   for (let i = 0; i < event.params.tokens.length ; i++) {
+//     let balances = transferEntity.balances;
+//     let balanceEntity = new Balance(defiContract.treasury().toHex() + event.params.tokens[i].token);
+//     balanceEntity.address = event.params.tokens[i].token;
+//     balanceEntity.token = Token.load(event.params.tokens[i].token.toHex()).id;
+//     balanceEntity.total = balanceEntity.total.plus(event.params.tokens[i].amount);
+//     balances.push(balanceEntity.id);
+//   }
 
-  let contract = Contract.load(event.address.toHex());
-  contract.depositsOpen = false;
-  contract.withdrawalsOpen = false;
-  contract.privateFarmingOpen = true;
-} 
+//   let contract = Contract.load(event.address.toHex());
+//   contract.depositsOpen = false;
+//   contract.withdrawalsOpen = false;
+//   contract.privateFarmingOpen = true;
+
+//   transferEntity.save();
+//   contract.save();
+// } 

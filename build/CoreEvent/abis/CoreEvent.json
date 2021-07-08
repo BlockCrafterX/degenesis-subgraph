@@ -2,6 +2,11 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "treasury",
+        "type": "address"
+      },
+      {
         "components": [
           {
             "internalType": "address",
@@ -12,6 +17,11 @@
             "internalType": "uint256",
             "name": "maxUserLimit",
             "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "systemFinalized",
+            "type": "bool"
           }
         ],
         "internalType": "struct ICoreEvent.SupportedTokenData[]",
@@ -111,6 +121,31 @@
         "type": "tuple"
       }
     ],
+    "name": "DurationIncreased",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "startingBlock",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "blockDuration",
+            "type": "uint256"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct ICoreEvent.DurationInfo",
+        "name": "duration",
+        "type": "tuple"
+      }
+    ],
     "name": "DurationSet",
     "type": "event"
   },
@@ -182,6 +217,19 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "address[]",
+        "name": "tokens",
+        "type": "address[]"
+      }
+    ],
+    "name": "SetNoSwap",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "components": [
           {
             "internalType": "address",
@@ -192,6 +240,11 @@
             "internalType": "uint256",
             "name": "maxUserLimit",
             "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "systemFinalized",
+            "type": "bool"
           }
         ],
         "indexed": false,
@@ -344,6 +397,11 @@
             "internalType": "uint256",
             "name": "maxUserLimit",
             "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "systemFinalized",
+            "type": "bool"
           }
         ],
         "internalType": "struct ICoreEvent.SupportedTokenData[]",
@@ -584,6 +642,11 @@
             "internalType": "uint256",
             "name": "maxUserLimit",
             "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "systemFinalized",
+            "type": "bool"
           }
         ],
         "internalType": "struct ICoreEvent.SupportedTokenData[]",
@@ -595,6 +658,19 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_blockDuration",
+        "type": "uint256"
+      }
+    ],
+    "name": "increaseDuration",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "owner",
     "outputs": [
@@ -602,19 +678,6 @@
         "internalType": "address",
         "name": "",
         "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "ratesPublished",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -636,6 +699,19 @@
       }
     ],
     "name": "setDuration",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "tokens",
+        "type": "address[]"
+      }
+    ],
+    "name": "setNoSwap",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -686,6 +762,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "stage1Locked",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -704,6 +793,11 @@
         "internalType": "uint256",
         "name": "maxUserLimit",
         "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "systemFinalized",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -769,21 +863,9 @@
   {
     "inputs": [
       {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "token",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct ICoreEvent.TokenData[]",
+        "internalType": "address[]",
         "name": "tokens",
-        "type": "tuple[]"
+        "type": "address[]"
       }
     ],
     "name": "transferToTreasury",

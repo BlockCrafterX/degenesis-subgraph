@@ -29,40 +29,19 @@ dataSources:
           file: DefiRound/abis/DefiRound.json
       eventHandlers:
         - event: Deposited(address,(address,uint256))
-          handler: HANDLER HERE
+          handler: handleDeposit
         - event: Withdrawn(address,(address,uint256),bool)
-          handler: HANDLER HERE
+          handler: handleWithdraw
         - event: SupportedTokensAdded((address,address,address,uint256)[])
-          handler: HANDLER HERE
-        - event: RatesPublished((address,uint256,uint256)[])
-          handler: HANDLER HERE
+          handler: handleSupportedTokens
         - event: GenesisTransfer(address,uint256)
-          handler: HANDLER HERE
-        - event: Claimed(address,uint256)
-          handler: HANDLER HERE
+          handler: handleGenesisTransfer
         - event: AssetsFinalized(address,address,uint256)
-          handler: HANDLER HERE
-        - event: TransferredToPool(address,uint256)
-          handler: HANDLER HERE
+          handler: handleFinalizedAsset
         - event: WhitelistConfigured((bool,bytes32))
-          handler: HANDLER HERE
-        - event: TreasuryTransfer()
-          handler: HANDLER HERE
-      callHandlers:
-        - function: configureWhitelist((bool,bytes32))
-          handler: HANDLER HERE
-        - function: deposit((address,uint256),bytes32[])
-          handler: HANDLER HERE
-        - function: withdraw((address,uint256),bool)
-          handler: HANDLER HERE
-        - function: addSupportedTokens((address,address,address,uint256)[])
-          handler: HANDLER HERE
-        - function: publishRates((address,uint256,uint256)[],(uint256,uint256),uint256)
-          handler: HANDLER HERE
-        - function: finalizeAssets(bool)
-          handler: HANDLER HERE
-        - function: transferToTreasury()
-          handler: HANDLER HERE
+          handler: handleWhitelist
+        - event: TreasuryTransfer((address,uint256)[])
+          handler: handleTreasuryTransfer
       file: DefiRound/DefiRound.wasm
   - kind: ethereum/contract
     name: CoreEvent
@@ -88,7 +67,7 @@ dataSources:
         - name: CoreEvent
           file: CoreEvent/abis/CoreEvent.json
       eventHandlers:
-        - event: SupportedTokensAdded((address,uint256)[])
+        - event: SupportedTokensAdded((address,uint256,bool)[])
           handler: HANDLER HERE
         - event: TreasurySet(address)
           handler: HANDLER HERE
@@ -111,7 +90,7 @@ dataSources:
           handler: HANDLER HERE
         - function: setDuration(uint256)
           handler: HANDLER HERE
-        - function: addSupportedTokens((address,uint256)[])
+        - function: addSupportedTokens((address,uint256,bool)[])
           handler: HANDLER HERE
         - function: deposit((address,uint256)[],bytes32[])
           handler: HANDLER HERE
