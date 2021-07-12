@@ -496,13 +496,4 @@ export class FinalizedAsset extends Entity {
   set privateFarming(value: boolean) {
     this.set("privateFarming", Value.fromBoolean(value));
   }
-
-  get amount(): BigInt {
-    let value = this.get("amount");
-    return value.toBigInt();
-  }
-
-  set amount(value: BigInt) {
-    this.set("amount", Value.fromBigInt(value));
-  }
 }

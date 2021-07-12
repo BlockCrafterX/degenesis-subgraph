@@ -189,7 +189,6 @@ export function handleWhitelist(event: WhitelistConfigured): void {
   whitelist.save();
 }
 
-// indexOf
 export function handleSupportedTokens(event: SupportedTokensAdded): void {
 
   for (let i = 0; i < event.params.tokenData.length; i++ ) {
@@ -230,8 +229,6 @@ export function handleFinalizedAsset(event: AssetsFinalized): void {
   tokens.push(event.params.token.toHex());
   finalizedAsset.token = tokens;
 
-  finalizedAsset.amount = event.params.assetsMoved;
-
   let contractId = event.address.toHex();
   let defiContract = DefiRound.bind(Address.fromString(contractId));
   let contract = Contract.load(contractId)
@@ -254,11 +251,11 @@ export function handleGenesisTransfer(event: GenesisTransfer): void {
   finalizedAssetEntity.privateFarming = true;
   finalizedAssetEntity.save();
 
-  let defiContract = DefiRound.bind(event.address);
-  // This
-  let genesisArr = defiContract.getGenesisPools([]);
-  let genesis = genesisArr[0];
-  let genesisEntity = Pool.load(genesis.toHex());
+  let tokenArr = finalizedAssetEntity.token;
+  let token = Token.load(tokenArr[0]);
+  let genesis = token.oracle
+  
+  let genesisEntity = Pool.load(genesis);
   genesisEntity.amountDeposited = genesisEntity.amountDeposited.plus(event.params.amountTransferred);
 }
 
