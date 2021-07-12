@@ -53,7 +53,7 @@ type TransferToTreasury @entity {
 }
 
 type FinalizedAsset @entity {
-  id: ID! # User address + token address
+  id: ID!
   token: [Token!]!
   privateFarming: Boolean! # Genesis for Defi, farming for Core
 }

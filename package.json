@@ -8,7 +8,8 @@
     "codegen": "graph codegen",
     "build": "graph build",
     "deploy": "graph deploy Tokemak/tokemak-subgraph --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
-    "deploy-local": "graph deploy Tokemak/tokemak-subgraph --ipfs http://localhost:5001 --node http://127.0.0.1:8020"
+    "deploy-local": "graph deploy Tokemak/tokemak-subgraph --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
+    "node": "dotenv -- cross-var ganache-cli -h 0.0.0.0 -f https://mainnet.infura.io/v3/%INFURA_KEY%"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.20.1",
@@ -17,6 +18,8 @@
   "dependencies": {
     "babel-polyfill": "^6.26.0",
     "babel-register": "^6.26.0",
+    "cross-var": "^1.1.0",
+    "dotenv-cli": "^4.0.0",
     "truffle": "^5.0.4",
     "truffle-contract": "^4.0.5",
     "truffle-hdwallet-provider": "^1.0.4"
