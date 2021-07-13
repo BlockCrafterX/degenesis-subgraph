@@ -194,13 +194,13 @@ export class Oracle extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get oracleAddr(): Bytes {
-    let value = this.get("oracleAddr");
-    return value.toBytes();
+  get token(): string {
+    let value = this.get("token");
+    return value.toString();
   }
 
-  set oracleAddr(value: Bytes) {
-    this.set("oracleAddr", Value.fromBytes(value));
+  set token(value: string) {
+    this.set("token", Value.fromString(value));
   }
 }
 

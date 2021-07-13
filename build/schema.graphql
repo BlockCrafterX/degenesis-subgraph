@@ -16,9 +16,9 @@ type Token @entity {
   total: BigInt!
 }
 
-type Oracle @entity {  # Change to have id be oracle address and token address be token entity
-  id: ID! # token address
-  oracleAddr: Bytes!
+type Oracle @entity {
+  id: ID! # Oracle addr
+  token: Token!
 }
 
 type Pool @entity {
@@ -53,7 +53,7 @@ type TransferToTreasury @entity {
 }
 
 type FinalizedAsset @entity {
-  id: ID! # User address + token address
+  id: ID!
   token: [Token!]!
   privateFarming: Boolean! # Genesis for Defi, farming for Core
 }

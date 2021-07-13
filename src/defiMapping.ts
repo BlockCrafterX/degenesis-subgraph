@@ -40,11 +40,12 @@ export function handleDeposit(event: Deposited): void {
 
   if (!token) {
     let genesis = defiContract.getGenesisPools([event.params.tokenInfo.token])[0];
+    let oracle = defiContract.getTokenOracles([event.params.tokenInfo.token])[0];
     token = new Token(tokenId);
     let erc20 = ERC20.bind(Address.fromString(tokenId));
     token.name = erc20.name();
     token.symbol = erc20.symbol();
-    token.oracle = Oracle.load(event.params.tokenInfo.token.toHex()).id;
+    token.oracle = Oracle.load(oracle.toHex()).id;
     token.pool = Pool.load(genesis.toHex()).id;
   }
   token.total = token.total.plus(event.params.tokenInfo.amount);
@@ -112,11 +113,12 @@ export function handleWithdraw(event: Withdrawn): void {
 
   if (!token) {
     let genesis = defiContract.getGenesisPools([event.params.tokenInfo.token])[0];
+    let oracle = defiContract.getTokenOracles([event.params.tokenInfo.token])[0];
     token = new Token(tokenId);
     let erc20 = ERC20.bind(Address.fromString(tokenId));
     token.name = erc20.name();
     token.symbol = erc20.symbol();
-    token.oracle = Oracle.load(event.params.tokenInfo.token.toHex()).id;
+    token.oracle = Oracle.load(oracle.toHex()).id;
     token.pool = Pool.load(genesis.toHex()).id;
   }
   token.total = token.total.plus(event.params.tokenInfo.amount);
@@ -202,10 +204,10 @@ export function handleSupportedTokens(event: SupportedTokensAdded): void {
     tokenEntity.total = BigInt.fromI32(0);
 
     let oracleIdArr = event.params.tokenData;
-    let oracleId = oracleIdArr[i].token.toHexString();
+    let oracleId = oracleIdArr[i].oracle.toHexString();
     let oracleEntity = new Oracle(oracleId);
 
-    oracleEntity.oracleAddr = oracleIdArr[i].oracle;
+    oracleEntity.token = tokenEntity.id;
     tokenEntity.oracle = oracleEntity.id;
 
     let poolIdArr = event.params.tokenData;
@@ -253,7 +255,7 @@ export function handleGenesisTransfer(event: GenesisTransfer): void {
 
   let tokenArr = finalizedAssetEntity.token;
   let token = Token.load(tokenArr[0]);
-  let genesis = token.oracle
+  let genesis = token.pool;
   
   let genesisEntity = Pool.load(genesis);
   genesisEntity.amountDeposited = genesisEntity.amountDeposited.plus(event.params.amountTransferred);
