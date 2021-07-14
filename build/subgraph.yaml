@@ -26,7 +26,7 @@ dataSources:
         - FinalizedAsset
       abis:
         - name: DefiRound
-          file: DefiRound/abis/DefiRound.json
+          file: DefiRound/build/DefiRound/abis/DefiRound.json
       eventHandlers:
         - event: Deposited(address,(address,uint256))
           handler: handleDeposit
@@ -65,7 +65,7 @@ dataSources:
         - FinalizedAssets
       abis:
         - name: CoreEvent
-          file: CoreEvent/abis/CoreEvent.json
+          file: CoreEvent/build/CoreEvent/abis/CoreEvent.json
       eventHandlers:
         - event: SupportedTokensAdded((address,uint256,bool)[])
           handler: HANDLER HERE
@@ -113,7 +113,7 @@ dataSources:
       entities: []
       abis:
         - name: ERC20
-          file: ERC20/abis/ERC20.json
+          file: ERC20/build/ERC20/abis/ERC20.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: HANDLER HERE
