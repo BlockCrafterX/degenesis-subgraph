@@ -9,8 +9,8 @@
     "build": "graph build",
     "deploy": "graph deploy Tokemak/tokemak-subgraph --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "deploy-local": "graph deploy Tokemak/tokemak-subgraph --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
-    "node": "dotenv -- cross-var ganache-cli -h 0.0.0.0 -f https://mainnet.infura.io/v3/%INFURA_KEY%",
-    "test": "mocha"
+    "node": "dotenv -- cross-var ganache-cli -h 0.0.0.0 -f https://eth-mainnet.alchemyapi.io/v2/%ALCHEMY_KEY%",
+    "test": "mocha --timeout 0"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.20.1",
