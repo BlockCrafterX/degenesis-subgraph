@@ -36,28 +36,6 @@ export class AssetsFinalized__Params {
   }
 }
 
-export class Claimed extends ethereum.Event {
-  get params(): Claimed__Params {
-    return new Claimed__Params(this);
-  }
-}
-
-export class Claimed__Params {
-  _event: Claimed;
-
-  constructor(event: Claimed) {
-    this._event = event;
-  }
-
-  get user(): Address {
-    return this._event.parameters[0].value.toAddress();
-  }
-
-  get claimedAmount(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
-  }
-}
-
 export class Deposited extends ethereum.Event {
   get params(): Deposited__Params {
     return new Deposited__Params(this);
@@ -203,28 +181,6 @@ export class SupportedTokensAddedTokenDataStruct extends ethereum.Tuple {
 
   get maxLimit(): BigInt {
     return this[3].toBigInt();
-  }
-}
-
-export class TransferredToPool extends ethereum.Event {
-  get params(): TransferredToPool__Params {
-    return new TransferredToPool__Params(this);
-  }
-}
-
-export class TransferredToPool__Params {
-  _event: TransferredToPool;
-
-  constructor(event: TransferredToPool) {
-    this._event = event;
-  }
-
-  get token(): Address {
-    return this._event.parameters[0].value.toAddress();
-  }
-
-  get amount(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
   }
 }
 

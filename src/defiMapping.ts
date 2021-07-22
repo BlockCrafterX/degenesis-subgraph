@@ -1,7 +1,6 @@
 import { 
   Address, 
-  BigInt,
-  
+  BigInt
 } from "@graphprotocol/graph-ts";
 import { 
   DefiRound,
@@ -16,7 +15,7 @@ import {
 } from "../generated/DefiRound/DefiRound";
 import {
   ERC20
-} from "../generated/ERC20/ERC20";
+} from "../generated/DefiRound/ERC20";
 import {
   Pool,
   Contract,
@@ -49,8 +48,10 @@ export function handleDeposit(event: Deposited): void {
     token.symbol = erc20.symbol();
     token.oracle = Oracle.load(oracle.toHex()).id;
     token.pool = Pool.load(genesis.toHex()).id;
+    token.total = BigInt.fromI32(0);
   }
-  token.total = token.total.plus(event.params.tokenInfo.amount);
+
+  token.total = token.total.plus(event.params.tokenInfo.amount);  
 
   let contractId = event.address.toHex();
   let contract = Contract.load(contractId);
@@ -67,15 +68,22 @@ export function handleDeposit(event: Deposited): void {
 
   if (!contractBalance) {
     contractBalance = new Balance(contractBalanceId);
-    let contractBalances = contract.balances;
     contractBalance.address = event.address;
     contractBalance.token = token.id;
-    contractBalances.push(contractBalance.id);
-    contract.balances = contractBalances;
+    contractBalance.total = BigInt.fromI32(0);    
+    contractBalance.save();
   }
 
+  let contractBalances = contract.balances;    
+  if (!contractBalances) {
+    contractBalances = [];
+  }
+  contractBalances.push(contractBalance.id);
   contractBalance.total = contractBalance.total.plus(event.params.tokenInfo.amount);
+  contractBalance.save();
 
+  contract.balances = contractBalances;  
+  
   let userId = event.params.depositor.toHex();
   let user = User.load(userId);
 
@@ -86,21 +94,25 @@ export function handleDeposit(event: Deposited): void {
 
   let userBalanceId = event.params.depositor.toHex() + event.params.tokenInfo.token.toHex();
   let userBalance = Balance.load(userBalanceId);
-
+  
   if (!userBalance) {
     userBalance = new Balance(userBalanceId);
     userBalance.address = event.params.depositor;
     userBalance.token = tokenId;
-
-    let userBalancesArr = user.balances;
-    userBalancesArr.push(userBalance.id);
-    user.balances = userBalancesArr;
+    userBalance.total = BigInt.fromI32(0);
+    userBalance.save();
   } 
 
   userBalance.total = userBalance.total.plus(event.params.tokenInfo.amount);
-
   userBalance.save();
-  contractBalance.save();
+
+  let userBalancesArr = user.balances;
+  if (!userBalancesArr) {
+    userBalancesArr = [];
+  }
+  userBalancesArr.push(userBalance.id);
+  user.balances = userBalancesArr;
+    
   user.save();
   token.save();
   contract.save();
@@ -121,8 +133,10 @@ export function handleWithdraw(event: Withdrawn): void {
     token.symbol = erc20.symbol();
     token.oracle = Oracle.load(oracle.toHex()).id;
     token.pool = Pool.load(genesis.toHex()).id;
+    token.total = BigInt.fromI32(0);
   }
-  token.total = token.total.plus(event.params.tokenInfo.amount);
+
+  token.total = token.total.minus(event.params.tokenInfo.amount);  
 
   let contractId = event.address.toHex();
   let contract = Contract.load(contractId);
@@ -139,14 +153,21 @@ export function handleWithdraw(event: Withdrawn): void {
 
   if (!contractBalance) {
     contractBalance = new Balance(contractBalanceId);
-    let contractBalances = contract.balances;
     contractBalance.address = event.address;
     contractBalance.token = token.id;
-    contractBalances.push(contractBalance.id);
-    contract.balances = contractBalances;
+    contractBalance.total = BigInt.fromI32(0);  
+    contractBalance.save();  
   }
 
+  let contractBalances = contract.balances;    
+  if (!contractBalances) {
+    contractBalances = [];
+  }
+  contractBalances.push(contractBalance.id);
   contractBalance.total = contractBalance.total.plus(event.params.tokenInfo.amount);
+  contractBalance.save();
+
+  contract.balances = contractBalances;  
 
   let userId = event.params.withdrawer.toHex();
   let user = User.load(userId);
@@ -158,21 +179,25 @@ export function handleWithdraw(event: Withdrawn): void {
 
   let userBalanceId = event.params.withdrawer.toHex() + event.params.tokenInfo.token.toHex();
   let userBalance = Balance.load(userBalanceId);
-
+  
   if (!userBalance) {
     userBalance = new Balance(userBalanceId);
     userBalance.address = event.params.withdrawer;
     userBalance.token = tokenId;
-
-    let userBalancesArr = user.balances;
-    userBalancesArr.push(userBalance.id);
-    user.balances = userBalancesArr;
+    userBalance.total = BigInt.fromI32(0);
+    userBalance.save();
   } 
 
-  userBalance.total = userBalance.total.minus(event.params.tokenInfo.amount);
-
+  userBalance.total = userBalance.total.plus(event.params.tokenInfo.amount);
   userBalance.save();
-  contractBalance.save();
+
+  let userBalancesArr = user.balances;
+  if (!userBalancesArr) {
+    userBalancesArr = [];
+  }
+  userBalancesArr.push(userBalance.id);
+  user.balances = userBalancesArr;
+  
   user.save();
   token.save();
   contract.save();
@@ -273,6 +298,7 @@ export function handleTreasuryTransfer(event: TreasuryTransfer): void {
     balanceEntity.address = tokenArr[i].token;
     balanceEntity.token = Token.load(tokenArr[i].token.toHex()).id;
     balanceEntity.total = tokenArr[i].amount;
+    balanceEntity.save();
     balances.push(balanceEntity.id);
   }
 

@@ -20,7 +20,7 @@ async function main () {
     deployer = deployer.connect(ethers.provider);
 
     const defiContract = new ethers.Contract(
-        '0x5b9089C347e79160105E9447941df90306a24B82', defiAbi, deployer
+        '0x746946D6DDc55bA8F3fEd92A6C02e96CdbA1C3dD', defiAbi, deployer
     );
 
     console.log(await ethers.provider.getBlockNumber());
@@ -32,7 +32,11 @@ async function main () {
         [
             [WETH_ADDRESS, ETH_ORACLE, ETH_POOL, 45],
             [USDC_ADDRESS, USDC_ORACLE, USDC_POOL, 200000]
-        ]
+        ],
+        {
+            gasPrice: 12000000000,
+            gasLimit: 12500000
+        }
     );
     await tx.wait();
     } catch (e) {

@@ -29,7 +29,11 @@ module.exports = {
     hardhat: { },
     kovan: {
       url: 'https://eth-kovan.alchemyapi.io/v2/' + process.env.ALCHEMY_KEY,
-      accounts: ['b84cacd4f00c07c9bad189de93eeb9cf04001d61ad6ec66f9ee2a44e51aeadd6']
+      accounts: [
+        process.env.PRIVATE_KEY_DEPLOYER,
+        process.env.PRIVATE_KEY_ETH_DEPOSITOR,
+        process.env.PRIVATE_KEY_USDC_DEPOSITOR
+      ]
     }
   },
 }

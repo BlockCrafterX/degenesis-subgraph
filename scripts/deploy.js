@@ -31,9 +31,8 @@ async function main() {
     // let provider = new ethers.providers.Web3Provider();
     // let currentBlock = await provider.getBlockNumber();
 
-    let provider = new ethers.providers.getDefaultProvider();
     let deployer = new ethers.Wallet(hre.config.networks.kovan.accounts[0]);
-    deployer = deployer.connect(provider);
+    deployer = deployer.connect(ethers.provider);
 
     const defiInterface = await new ethers.utils.Interface(defiAbi);
     const defiFactory = await new ethers.ContractFactory(defiInterface, defiBytecode, deployer);
