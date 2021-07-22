@@ -1,6 +1,7 @@
 import { 
   Address, 
-  BigInt 
+  BigInt,
+  
 } from "@graphprotocol/graph-ts";
 import { 
   DefiRound,
@@ -10,7 +11,8 @@ import {
   SupportedTokensAdded,
   AssetsFinalized,
   GenesisTransfer,
-  TreasuryTransfer
+  TreasuryTransfer,
+  RatesPublished
 } from "../generated/DefiRound/DefiRound";
 import {
   ERC20
@@ -24,13 +26,13 @@ import {
   WhiteList,
   FinalizedAsset,
   Oracle,
-  TransferToTreasury
+  TransferToTreasury,
+  PublishedRates
 } from "../generated/schema";
 
 const SECONDS_IN_WEEK = 604800;
 
 // Consolidate reused code once functions are complete
-// CHECK SAVES
 
 export function handleDeposit(event: Deposited): void {
   let tokenId = event.params.tokenInfo.token.toHex();
@@ -61,11 +63,11 @@ export function handleDeposit(event: Deposited): void {
   }
 
   let contractBalanceId = event.address.toHex() + event.params.tokenInfo.token.toHex()
-  let contractBalances = contract.balances;
   let contractBalance = Balance.load(contractBalanceId);
 
   if (!contractBalance) {
     contractBalance = new Balance(contractBalanceId);
+    let contractBalances = contract.balances;
     contractBalance.address = event.address;
     contractBalance.token = token.id;
     contractBalances.push(contractBalance.id);
@@ -89,7 +91,6 @@ export function handleDeposit(event: Deposited): void {
     userBalance = new Balance(userBalanceId);
     userBalance.address = event.params.depositor;
     userBalance.token = tokenId;
-    userBalance.total = userBalance.total.plus(event.params.tokenInfo.amount);
 
     let userBalancesArr = user.balances;
     userBalancesArr.push(userBalance.id);
@@ -98,11 +99,11 @@ export function handleDeposit(event: Deposited): void {
 
   userBalance.total = userBalance.total.plus(event.params.tokenInfo.amount);
 
+  userBalance.save();
+  contractBalance.save();
   user.save();
   token.save();
   contract.save();
-  userBalance.save();
-  contractBalance.save();
 }
 
 export function handleWithdraw(event: Withdrawn): void {
@@ -128,17 +129,17 @@ export function handleWithdraw(event: Withdrawn): void {
 
   if(!contract) {
     contract = new Contract(contractId);
-    contract.depositsOpen = true;
-    contract.withdrawalsOpen = false;
+    contract.depositsOpen = false;
+    contract.withdrawalsOpen = true;
     contract.privateFarmingOpen = false;
   }
 
   let contractBalanceId = event.address.toHex() + event.params.tokenInfo.token.toHex()
-  let contractBalances = contract.balances;
   let contractBalance = Balance.load(contractBalanceId);
 
   if (!contractBalance) {
     contractBalance = new Balance(contractBalanceId);
+    let contractBalances = contract.balances;
     contractBalance.address = event.address;
     contractBalance.token = token.id;
     contractBalances.push(contractBalance.id);
@@ -162,7 +163,6 @@ export function handleWithdraw(event: Withdrawn): void {
     userBalance = new Balance(userBalanceId);
     userBalance.address = event.params.withdrawer;
     userBalance.token = tokenId;
-    userBalance.total = userBalance.total.plus(event.params.tokenInfo.amount);
 
     let userBalancesArr = user.balances;
     userBalancesArr.push(userBalance.id);
@@ -171,11 +171,11 @@ export function handleWithdraw(event: Withdrawn): void {
 
   userBalance.total = userBalance.total.minus(event.params.tokenInfo.amount);
 
+  userBalance.save();
+  contractBalance.save();
   user.save();
   token.save();
   contract.save();
-  userBalance.save();
-  contractBalance.save();
 }  
 
 export function handleWhitelist(event: WhitelistConfigured): void {
@@ -266,16 +266,17 @@ export function handleTreasuryTransfer(event: TreasuryTransfer): void {
   let transferEntity = new TransferToTreasury(transferId);
 
   let defiContract = DefiRound.bind(event.address);
+  let balances = transferEntity.balances;
   for (let i = 0; i < event.params.tokens.length ; i++) {
     let tokenArr = event.params.tokens;
-    let balances = transferEntity.balances;
     let balanceEntity = new Balance(defiContract.treasury().toHex() + tokenArr[i].token.toHex());
     balanceEntity.address = tokenArr[i].token;
     balanceEntity.token = Token.load(tokenArr[i].token.toHex()).id;
-    balanceEntity.total = balanceEntity.total.plus(tokenArr[i].amount);
+    balanceEntity.total = tokenArr[i].amount;
     balances.push(balanceEntity.id);
   }
 
+  transferEntity.balances = balances;
   let contract = Contract.load(event.address.toHex());
   contract.depositsOpen = false;
   contract.withdrawalsOpen = false;
@@ -284,3 +285,21 @@ export function handleTreasuryTransfer(event: TreasuryTransfer): void {
   transferEntity.save();
   contract.save();
 } 
+
+export function handleRates(event: RatesPublished): void {
+  let ratesIdArr = event.params.ratesData;
+
+  for (let i = 0; i < ratesIdArr.length; i++) {
+    let token = ratesIdArr[i].token;
+    let blockNum = event.block.number;
+    let ratesId = token.toHex() + blockNum.toHex();
+
+    let ratesEntity = new PublishedRates(ratesId);
+    ratesEntity.token = Token.load(token.toHex()).id;
+    ratesEntity.blocknumber = blockNum;
+    ratesEntity.numberator = ratesIdArr[i].numerator;
+    ratesEntity.denominator = ratesIdArr[i].denominator;
+
+    ratesEntity.save();
+  } 
+}

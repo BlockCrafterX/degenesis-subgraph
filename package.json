@@ -9,8 +9,9 @@
     "build": "graph build",
     "deploy": "graph deploy Tokemak/tokemak-subgraph --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "deploy-local": "graph deploy Tokemak/tokemak-subgraph --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
-    "node": "dotenv -- cross-var ganache-cli -h 0.0.0.0 -f https://eth-mainnet.alchemyapi.io/v2/%ALCHEMY_KEY%",
-    "test": "mocha --timeout 0"
+    "node": "ganache-cli -h 0.0.0.0",
+    "test": "mocha --timeout 0",
+    "deploy-contracts": "node scripts/deploy.js"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.20.1",
@@ -18,12 +19,18 @@
     "ethereum-waffle": "^3.4.0"
   },
   "dependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "@nomiclabs/hardhat-waffle": "^2.0.1",
+    "@openzeppelin/hardhat-upgrades": "^1.9.0",
     "babel-polyfill": "^6.26.0",
     "babel-register": "^6.26.0",
     "chai": "^4.3.4",
     "cross-var": "^1.1.0",
+    "dotenv": "^10.0.0",
     "dotenv-cli": "^4.0.0",
     "ethers": "^5.4.1",
+    "graphql-request": "^3.4.0",
+    "hardhat": "^2.4.3",
     "mocha": "^9.0.2",
     "truffle": "^5.0.4",
     "truffle-contract": "^4.0.5",

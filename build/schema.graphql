@@ -1,6 +1,5 @@
 type Contract @entity {
   id: ID!
-  totalUSD: BigInt!
   depositsOpen: Boolean!
   withdrawalsOpen: Boolean!
   privateFarmingOpen: Boolean!
@@ -58,4 +57,10 @@ type FinalizedAsset @entity {
   privateFarming: Boolean! # Genesis for Defi, farming for Core
 }
 
-
+type PublishedRates @entity {
+  id: ID!
+  token: Token!
+  blocknumber: BigInt!
+  numberator: BigInt!
+  denominator: BigInt!
+}

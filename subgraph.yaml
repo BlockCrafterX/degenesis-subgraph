@@ -1,4 +1,5 @@
-specVersion: 0.0.2
+
+    specVersion: 0.0.2
     description: Tokemak Subgraph
     repository: https://github.com/Tokemak/tokemak-subgraph
     schema:
@@ -7,11 +8,11 @@ specVersion: 0.0.2
       # ---------------------------------- DefiRound ----------------------------------
       - kind: ethereum/contract
         name: DefiRound
-        network: mainnet
+        network: kovan
         source:
-          address: "0xAC980f23a0AdDADa74f322Fab8b411D04dEbA63b"
+          address: "0x4826533B4897376654Bb4d4AD88B7faFD0C98528"
           abi: DefiRound
-          startBlock: 12826819
+          startBlock: 26253074
         mapping:
           kind: ethereum/events
           apiVersion: 0.0.4
@@ -29,6 +30,8 @@ specVersion: 0.0.2
           abis:
             - name: DefiRound
               file: ./build/DefiRound/abis/DefiRound.json
+            - name: ERC20
+              file: ./build/ERC20/abis/ERC20.json
           eventHandlers:
             - event: Deposited(address,(address,uint256))
               handler: handleDeposit
@@ -44,83 +47,8 @@ specVersion: 0.0.2
               handler: handleWhitelist
             - event: TreasuryTransfer((address,uint256)[]) 
               handler: handleTreasuryTransfer
+            - event: RatesPublished((address,uint256,uint256)[])
+              handler: handleRates
           file: ./src/defiMapping.ts
       # ---------------------------------- CoreEvent ----------------------------------
-      - kind: ethereum/contract
-        name: CoreEvent
-        network: mainnet
-        source:
-          address: "0xD6C0C839D6D8483F2a5b2Ee73a0552195fD0BCcA"
-          abi: CoreEvent
-          startBlock: 12826819
-        mapping:
-          kind: ethereum/events
-          apiVersion: 0.0.4
-          language: wasm/assemblyscript
-          entities: # May change to specialize for Core
-            - Contract
-            - Token
-            - Oracle
-            - Genesis
-            - User
-            - Balance
-            - WhiteList
-            - SupportedTokens
-            - FinalizedAssets
-          abis: 
-            - name: CoreEvent
-              file: ./build/CoreEvent/abis/CoreEvent.json
-          eventHandlers:
-            - event: SupportedTokensAdded((address,uint256,bool)[])
-              handler: HANDLER HERE
-            - event: TreasurySet(address)
-              handler: HANDLER HERE
-            - event: DurationSet((uint256,uint256))
-              handler: HANDLER HERE
-            - event:  Deposited(address,(address,uint256)[])
-              handler: HANDLER HERE
-            - event: Withdrawn(address,(address,uint256)[])
-              handler: HANDLE HERE
-            - event:  RatesPublished((address,uint256,uint256,uint256,uint256,address)[])
-              handler: HANDLER HERE
-            - event: AssetsFinalized(address,(address,uint256,uint256)[])
-              handler: HANDLER HERE
-            - event: TreasuryTransfer((address,uint256)[])
-              handler: HANDLER HERE
-            - event: WhitelistConfigured((bool,bytes32))
-              handler: HANDLER HERE
-          callHandlers: # Will likley not use many of these
-            - function: configureWhitelist((bool,bytes32))
-              handler: HANDLER HERE
-            - function: setDuration(uint256)
-              handler: HANDLER HERE
-            - function: addSupportedTokens((address,uint256,bool)[])
-              handler: HANDLER HERE
-            - function: deposit((address,uint256)[],bytes32[])
-              handler: HANDLER HERE
-            - function: withdraw((address,uint256)[])
-              handler: HANDLER HERE
-            - function: setRates((address,uint256,uint256,uint256,uint256,address)[])
-              handler: HANDLER HERE
-            - function: finalize((address,bool)[])
-              handler: HANDLER HERE
-          file: ./src/coreMapping.ts
-      # ---------------------------------- ERC20 ----------------------------------
-      - kind: ethereum/contract
-        name: ERC20
-        network: mainnet
-        source:
-          abi: ERC20
-        mapping:
-          kind: ethereum/events
-          apiVersion: 0.0.4
-          language: wasm/assemblyscript
-          entities: []
-          abis:
-            - name: ERC20
-              file: ./build/ERC20/abis/ERC20.json'
-          eventHandlers:
-            - event: Transfer(indexed address,indexed address,uint256)
-              handler: HANDLER HERE
-          file: ./src/ercMapping.ts
-        
+      

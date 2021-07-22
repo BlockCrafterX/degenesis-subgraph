@@ -42,15 +42,6 @@ export class Contract extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get totalUSD(): BigInt {
-    let value = this.get("totalUSD");
-    return value.toBigInt();
-  }
-
-  set totalUSD(value: BigInt) {
-    this.set("totalUSD", Value.fromBigInt(value));
-  }
-
   get depositsOpen(): boolean {
     let value = this.get("depositsOpen");
     return value.toBoolean();
@@ -495,5 +486,72 @@ export class FinalizedAsset extends Entity {
 
   set privateFarming(value: boolean) {
     this.set("privateFarming", Value.fromBoolean(value));
+  }
+}
+
+export class PublishedRates extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save PublishedRates entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save PublishedRates entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("PublishedRates", id.toString(), this);
+  }
+
+  static load(id: string): PublishedRates | null {
+    return store.get("PublishedRates", id) as PublishedRates | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get token(): string {
+    let value = this.get("token");
+    return value.toString();
+  }
+
+  set token(value: string) {
+    this.set("token", Value.fromString(value));
+  }
+
+  get blocknumber(): BigInt {
+    let value = this.get("blocknumber");
+    return value.toBigInt();
+  }
+
+  set blocknumber(value: BigInt) {
+    this.set("blocknumber", Value.fromBigInt(value));
+  }
+
+  get numberator(): BigInt {
+    let value = this.get("numberator");
+    return value.toBigInt();
+  }
+
+  set numberator(value: BigInt) {
+    this.set("numberator", Value.fromBigInt(value));
+  }
+
+  get denominator(): BigInt {
+    let value = this.get("denominator");
+    return value.toBigInt();
+  }
+
+  set denominator(value: BigInt) {
+    this.set("denominator", Value.fromBigInt(value));
   }
 }
