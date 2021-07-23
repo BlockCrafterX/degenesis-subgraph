@@ -164,7 +164,7 @@ export function handleWithdraw(event: Withdrawn): void {
     contractBalances = [];
   }
   contractBalances.push(contractBalance.id);
-  contractBalance.total = contractBalance.total.plus(event.params.tokenInfo.amount);
+  contractBalance.total = contractBalance.total.minus(event.params.tokenInfo.amount);
   contractBalance.save();
 
   contract.balances = contractBalances;  
@@ -188,7 +188,7 @@ export function handleWithdraw(event: Withdrawn): void {
     userBalance.save();
   } 
 
-  userBalance.total = userBalance.total.plus(event.params.tokenInfo.amount);
+  userBalance.total = userBalance.total.minus(event.params.tokenInfo.amount);
   userBalance.save();
 
   let userBalancesArr = user.balances;
