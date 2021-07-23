@@ -1,11 +1,5 @@
-/**
- * Deploy to Kovan
- */
 const hre = require('hardhat');
 const ethers = hre.ethers;
-// const { getYAML } = require('../test/YAML.js');
-
-// const fs = require('fs');
 
 const defiAbi = require('../build/DefiRound/abis/DefiRound.json');
 const defiBytecode = require('../bytecode/DefiRound.json');
@@ -14,7 +8,6 @@ const defiBytecode = require('../bytecode/DefiRound.json');
 // const coreBytecode = require('../bytecode/CoreEvent.json');
 
 const WETH_ADDRESS = "0xd0A1E359811322d97991E03f863a0C30C2cF029C"; // Kovan
-// const USDC_ADDRESS = "0xb7a4f3e9097c08da09517b5ab877f7a917224ede"; // Kovan
 
 // const LINK_ADDRESS = '0x514910771af9ca656af840dff83e8264ecf986ca';
 // const BNT_ADDRESS = '0x1f573d6fb3f13d689ff844b4ce37794d79a7ff1c';
@@ -50,8 +43,6 @@ async function main() {
 
     // console.log(defiContract.address);
     // console.log(coreContract.address);
-
-    // fs.writeFileSync("subgraph.yaml", getYAML(defiContract.address, coreContract.address, currentBlock));
 }
 
 main()

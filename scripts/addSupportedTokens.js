@@ -12,8 +12,6 @@ const USDC_ORACLE = "0xa73b861925e3e220a2254dfd20c507ef21eb292a"; // Kovan
 const ETH_POOL = '0x01789ACc2bB3dd750734A359BF60Fe95Ad8b74B6'; // Deployed Kovan
 const USDC_POOL = '0xE40aA506670E2E637CD276dAA564D92F17F25C0a'; // Deployed Kovan
 
-// const TREASURY_ADDRESS = "0x8C23b37d1cbEA412Fc3f664d9d69cE56c0254138";
-
 async function main () {
 
     let deployer = new ethers.Wallet(hre.config.networks.kovan.accounts[0]);

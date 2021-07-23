@@ -13,19 +13,12 @@ async function main () {
     let ethDepositor = new ethers.Wallet(hre.config.networks.kovan.accounts[1], ethers.provider);
     let usdcDepositor = new ethers.Wallet(hre.config.networks.kovan.accounts[2], ethers.provider);
 
-    // deployer = deployer.connect(ethers.provider);
-    // ethDepositor = ethDepositor.connect(ethers.provider);
-    // usdcDepositor = usdcDepositor.connect(ethers.provider);
-
     const defiContract = new ethers.Contract(
         '0x746946D6DDc55bA8F3fEd92A6C02e96CdbA1C3dD', defiAbi, deployer
     )
     const usdcContract = new ethers.Contract(
         USDC_ADDRESS, erc20Abi, deployer
     );
-
-    // console.log(await defiContract.currentStage());
-    // console.log(await defiContract.whitelistSettings());
 
     const ethDepositorAddr = await ethDepositor.getAddress();
     const usdcDepositorAddr = await usdcDepositor.getAddress();
@@ -68,12 +61,10 @@ async function main () {
         console.log(e);
     }
 
-    // console.log(await defiContract.getAccountData(ethDepositorAddr));
-    // console.log(await defiContract.getAccountData(usdcDepositorAddr));
+    console.log(await defiContract.getAccountData(ethDepositorAddr));
+    console.log(await defiContract.getAccountData(usdcDepositorAddr));
 
 }
 
 main ();
-
-// 0xdDd129a1f21af0027Da269b4d768dE776C56457F
 
