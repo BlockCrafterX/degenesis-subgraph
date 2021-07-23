@@ -1,5 +1,13 @@
 version: '3'
 services:
+  eth:
+    image: tokemak/hardhat:v0.0.2
+    ports:
+      - '8541:8541'
+    environment: 
+      HOSTNAME: "0.0.0.0"
+      PORT: "8541"
+      DOCKER_HARDHAT_networks_hardhat_forking_url: ${FORKING_URL}
   graph-node:
     image: graphprotocol/graph-node:v0.22.0
     ports:
@@ -11,15 +19,15 @@ services:
     depends_on:
       - ipfs
       - postgres
+      - eth
     environment:
       postgres_host: postgres
       postgres_user: graph-node
       postgres_pass: let-me-in
       postgres_db: graph-node
       ipfs: 'ipfs:5001'
-      # Change next line if you want to connect to a different JSON-RPC endpoint
-      ethereum: 'mainnet:http://host.docker.internal:8545'
-      GRAPH_LOG: info
+      ethereum: '${GRAPH_NODE_ETH_URL}'
+      GRAPH_LOG: debug
   ipfs:
     image: ipfs/go-ipfs:v0.4.23
     ports:
