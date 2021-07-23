@@ -69,13 +69,21 @@ export class Contract extends Entity {
     this.set("privateFarmingOpen", Value.fromBoolean(value));
   }
 
-  get balances(): Array<string> {
+  get balances(): Array<string> | null {
     let value = this.get("balances");
-    return value.toStringArray();
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toStringArray();
+    }
   }
 
-  set balances(value: Array<string>) {
-    this.set("balances", Value.fromStringArray(value));
+  set balances(value: Array<string> | null) {
+    if (value === null) {
+      this.unset("balances");
+    } else {
+      this.set("balances", Value.fromStringArray(value as Array<string>));
+    }
   }
 }
 
@@ -283,13 +291,21 @@ export class User extends Entity {
     this.set("participant", Value.fromBoolean(value));
   }
 
-  get balances(): Array<string> {
+  get balances(): Array<string> | null {
     let value = this.get("balances");
-    return value.toStringArray();
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toStringArray();
+    }
   }
 
-  set balances(value: Array<string>) {
-    this.set("balances", Value.fromStringArray(value));
+  set balances(value: Array<string> | null) {
+    if (value === null) {
+      this.unset("balances");
+    } else {
+      this.set("balances", Value.fromStringArray(value as Array<string>));
+    }
   }
 }
 

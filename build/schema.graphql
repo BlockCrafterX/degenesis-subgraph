@@ -3,7 +3,7 @@ type Contract @entity {
   depositsOpen: Boolean!
   withdrawalsOpen: Boolean!
   privateFarmingOpen: Boolean!
-  balances: [Balance!]!
+  balances: [Balance!]
 }
 
 type Token @entity {
@@ -29,7 +29,7 @@ type Pool @entity {
 type User @entity {
   id: ID!
   participant: Boolean!
-  balances: [Balance!]! 
+  balances: [Balance!]
 }
 
 # Keep track of running totals

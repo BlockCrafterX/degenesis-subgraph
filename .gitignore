@@ -60,6 +60,10 @@ typings/
 # next.js build output
 .next
 
+generated
+data
+build
+bytecode
 node_modules
 
 #Hardhat files

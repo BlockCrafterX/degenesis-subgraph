@@ -11,7 +11,8 @@
     "deploy-local": "graph deploy Tokemak/tokemak-subgraph --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
     "node": "ganache-cli -h 0.0.0.0",
     "test": "mocha --timeout 0",
-    "deploy-contracts": "node scripts/deploy.js"
+    "deploy-contracts": "node scripts/deploy.js",
+    "full-local": "npm run codegen && npm run build && npm run create-local && npm run deploy-local"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.20.1",
@@ -19,6 +20,7 @@
     "ethereum-waffle": "^3.4.0"
   },
   "dependencies": {
+    "@tokemak/contracts": "0.0.12",
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
     "@openzeppelin/hardhat-upgrades": "^1.9.0",
