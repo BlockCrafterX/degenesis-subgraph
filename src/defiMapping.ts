@@ -328,4 +328,12 @@ export function handleRates(event: RatesPublished): void {
 
     ratesEntity.save();
   } 
+
+  let contract = Contract.load(event.address.toHex());
+  contract.depositsOpen = false;
+  contract.withdrawalsOpen = true;
+  contract.privateFarmingOpen = false;
+  
+  contract.save();
+
 }
