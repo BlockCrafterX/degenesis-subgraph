@@ -29,9 +29,9 @@
             - FinalizedAsset
           abis:
             - name: DefiRound
-              file: ./node_modules/@tokemak/contracts/artifacts/contracts/defi-round/DefiRound.sol/DefiRound.json
+              file: ./build/DefiRound/abis/DefiRound.json            
             - name: ERC20
-              file: ./node_modules/@tokemak/contracts/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json     
+              file: ./build/ERC20/abis/ERC20.json
           eventHandlers:
             - event: Deposited(address,(address,uint256))
               handler: handleDeposit

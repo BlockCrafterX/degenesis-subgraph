@@ -56,12 +56,8 @@ export function handleDeposit(event: Deposited): void {
   let contractId = event.address.toHex();
   let contract = Contract.load(contractId);
 
-  if(!contract) {
-    contract = new Contract(contractId);
-    contract.depositsOpen = true;
-    contract.withdrawalsOpen = false;
-    contract.privateFarmingOpen = false;
-  }
+  contract.depositsOpen = true;
+  contract.withdrawalsOpen = false;
 
   let contractBalanceId = event.address.toHex() + event.params.tokenInfo.token.toHex()
   let contractBalance = Balance.load(contractBalanceId);
@@ -141,12 +137,8 @@ export function handleWithdraw(event: Withdrawn): void {
   let contractId = event.address.toHex();
   let contract = Contract.load(contractId);
 
-  if(!contract) {
-    contract = new Contract(contractId);
-    contract.depositsOpen = false;
-    contract.withdrawalsOpen = true;
-    contract.privateFarmingOpen = false;
-  }
+  contract.depositsOpen = false;
+  contract.withdrawalsOpen = true;
 
   let contractBalanceId = event.address.toHex() + event.params.tokenInfo.token.toHex()
   let contractBalance = Balance.load(contractBalanceId);
@@ -242,6 +234,15 @@ export function handleSupportedTokens(event: SupportedTokensAdded): void {
     poolEntity.amountDeposited = BigInt.fromI32(0);
     tokenEntity.pool = poolEntity.id; 
 
+    let contractId = event.address.toHex();
+    let contract = new Contract(contractId);
+
+    contract.depositsOpen = true;
+    contract.withdrawalsOpen = false;
+    contract.privateFarmingOpen = false;
+    contract.balances = [];
+
+    contract.save();
     oracleEntity.save();
     tokenEntity.save();
     poolEntity.save();
