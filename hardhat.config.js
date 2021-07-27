@@ -27,8 +27,8 @@ module.exports = {
       timeout: 1000000,
     },
     hardhat: { },
-    kovan: {
-      url: 'https://eth-kovan.alchemyapi.io/v2/' + process.env.ALCHEMY_KEY,
+    mainnet: {
+      url: 'https://eth-mainnet.alchemyapi.io/v2/' + process.env.ALCHEMY_KEY,
       accounts: [
         process.env.PRIVATE_KEY_DEPLOYER,
         process.env.PRIVATE_KEY_ETH_DEPOSITOR,
