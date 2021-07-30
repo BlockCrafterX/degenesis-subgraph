@@ -48,7 +48,7 @@ type WhiteList @entity {
 
 type TransferToTreasury @entity {
   id: ID!
-  balances: [Balance!]!
+  balances: [Balance!]
 }
 
 type FinalizedAsset @entity {

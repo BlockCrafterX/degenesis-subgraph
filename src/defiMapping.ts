@@ -293,6 +293,10 @@ export function handleTreasuryTransfer(event: TreasuryTransfer): void {
 
   let defiContract = DefiRound.bind(event.address);
   let balances = transferEntity.balances;
+  if (!balances) {
+    balances = [];
+  }
+  
   for (let i = 0; i < event.params.tokens.length ; i++) {
     let tokenArr = event.params.tokens;
     let balanceEntity = new Balance(defiContract.treasury().toHex() + tokenArr[i].token.toHex());
