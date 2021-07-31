@@ -29,6 +29,7 @@ import {
   PublishedRates
 } from "../generated/schema";
 
+const ZERO_ADDRESS = Address.fromString('0x0000000000000000000000000000000000000000');
 const SECONDS_IN_WEEK = 604800;
 
 // Consolidate reused code once functions are complete
@@ -254,6 +255,10 @@ export function handleFinalizedAsset(event: AssetsFinalized): void {
   let finalizedAsset = new FinalizedAsset(finalizedAssetId);
   
   let tokens = finalizedAsset.token;
+  if (!tokens) {
+    finalizedAsset.token = [];
+  }
+
   tokens.push(event.params.token.toHex());
   finalizedAsset.token = tokens;
 
@@ -267,7 +272,6 @@ export function handleFinalizedAsset(event: AssetsFinalized): void {
     contract.withdrawalsOpen = false;
     contract.privateFarmingOpen = false;
   }
-
   finalizedAsset.save();
   contract.save();
 }
@@ -279,12 +283,23 @@ export function handleGenesisTransfer(event: GenesisTransfer): void {
   finalizedAssetEntity.privateFarming = true;
   finalizedAssetEntity.save();
 
-  let tokenArr = finalizedAssetEntity.token;
-  let token = Token.load(tokenArr[0]);
+  let defiContract = DefiRound.bind(event.address);
+  let accountData = defiContract.getAccountData(event.params.user);
+
+  let userDepositedToken;
+  for (let i = 0; i < accountData.length; i++) {
+    if (accountData[i].token != ZERO_ADDRESS) {
+      userDepositedToken = accountData[i].token;
+    }
+  }
+
+  let token = Token.load(userDepositedToken);
   let genesis = token.pool;
   
   let genesisEntity = Pool.load(genesis);
   genesisEntity.amountDeposited = genesisEntity.amountDeposited.plus(event.params.amountTransferred);
+
+  genesisEntity.save();
 }
 
 export function handleTreasuryTransfer(event: TreasuryTransfer): void {
