@@ -258,9 +258,9 @@ export function handleFinalizedAsset(event: AssetsFinalized): void {
   if (!tokens) {
     finalizedAsset.token = [];
   }
-
   tokens.push(event.params.token.toHex());
   finalizedAsset.token = tokens;
+  finalizedAsset.save();
 
   let contractId = event.address.toHex();
   let defiContract = DefiRound.bind(Address.fromString(contractId));
@@ -272,7 +272,6 @@ export function handleFinalizedAsset(event: AssetsFinalized): void {
     contract.withdrawalsOpen = false;
     contract.privateFarmingOpen = false;
   }
-  finalizedAsset.save();
   contract.save();
 }
 
