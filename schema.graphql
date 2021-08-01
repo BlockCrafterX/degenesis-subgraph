@@ -20,6 +20,7 @@ type Oracle @entity {
   token: Token!
 }
 
+# Will have to update for introduction of Pool contracts
 type Pool @entity {
   id: ID! # pool address
   depositedToken: Token!
@@ -34,7 +35,7 @@ type User @entity {
 
 # Keep track of running totals
 type Balance @entity {
-  id: ID! # user address + token address.  Done like this for core, can change to just user addr for Defi
+  id: ID!
   address: Bytes! # Address of user or contract (defi or core)
   token: Token!
   total: BigInt!
