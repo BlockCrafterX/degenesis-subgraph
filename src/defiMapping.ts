@@ -60,7 +60,7 @@ export function handleDeposit(event: Deposited): void {
   contract.depositsOpen = true;
   contract.withdrawalsOpen = false;
 
-  let contractBalanceId = event.address.toHex() + event.params.tokenInfo.token.toHex()
+  let contractBalanceId = event.address.toHex();
   let contractBalance = Balance.load(contractBalanceId);
 
   if (!contractBalance) {
@@ -89,7 +89,7 @@ export function handleDeposit(event: Deposited): void {
     user.participant = true;
   }
 
-  let userBalanceId = event.params.depositor.toHex() + event.params.tokenInfo.token.toHex();
+  let userBalanceId = event.params.depositor.toHex();
   let userBalance = Balance.load(userBalanceId);
   
   if (!userBalance) {
@@ -141,7 +141,7 @@ export function handleWithdraw(event: Withdrawn): void {
   contract.depositsOpen = false;
   contract.withdrawalsOpen = true;
 
-  let contractBalanceId = event.address.toHex() + event.params.tokenInfo.token.toHex()
+  let contractBalanceId = event.address.toHex();
   let contractBalance = Balance.load(contractBalanceId);
 
   if (!contractBalance) {
@@ -170,7 +170,7 @@ export function handleWithdraw(event: Withdrawn): void {
     user.participant = true;
   }
 
-  let userBalanceId = event.params.withdrawer.toHex() + event.params.tokenInfo.token.toHex();
+  let userBalanceId = event.params.withdrawer.toHex();
   let userBalance = Balance.load(userBalanceId);
   
   if (!userBalance) {
@@ -261,18 +261,6 @@ export function handleFinalizedAsset(event: AssetsFinalized): void {
   tokens.push(event.params.token.toHex());
   finalizedAsset.token = tokens;
   finalizedAsset.save();
-
-  let contractId = event.address.toHex();
-  let defiContract = DefiRound.bind(Address.fromString(contractId));
-  let contract = Contract.load(contractId)
-  if (event.block.timestamp > defiContract.lastLookExpiration()
-    .plus(BigInt.fromI32(2 * SECONDS_IN_WEEK))) 
-  {
-    contract.depositsOpen = false;
-    contract.withdrawalsOpen = false;
-    contract.privateFarmingOpen = false;
-  }
-  contract.save();
 }
 
 export function handleGenesisTransfer(event: GenesisTransfer): void {
@@ -282,15 +270,8 @@ export function handleGenesisTransfer(event: GenesisTransfer): void {
   finalizedAssetEntity.privateFarming = true;
   finalizedAssetEntity.save();
 
-  let defiContract = DefiRound.bind(event.address);
-  let accountData = defiContract.getAccountData(event.params.user);
-
-  let userDepositedToken;
-  for (let i = 0; i < accountData.length; i++) {
-    if (accountData[i].token != ZERO_ADDRESS) {
-      userDepositedToken = accountData[i].token;
-    }
-  }
+  let userBalance = Balance.load(finalizedAssetId); // Works because both are user address
+  let userDepositedToken = userBalance.token;
 
   let token = Token.load(userDepositedToken);
   let genesis = token.pool;
