@@ -1,7 +1,7 @@
 
     specVersion: 0.0.2
     description: {{title}}
-    repository: https://github.com/Tokemak/tokemak-subgraph
+    repository: https://github.com/Tokemak/degenesis-subgraph
     schema:
       file: ./schema.graphql
     dataSources:
