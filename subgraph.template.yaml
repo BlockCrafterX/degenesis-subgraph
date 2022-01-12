@@ -8,11 +8,11 @@
       # ---------------------------------- DefiRound ----------------------------------
       - kind: ethereum/contract
         name: DefiRound
-        network: mainnet
+        network: {{network}}
         source:
-          address: "0x3F350938420F78A2C8dF47c72f97a10Fd1cB55DB"
+          address: "{{defiAddres}}"
           abi: DefiRound
-          startBlock: 6161089
+          startBlock: {{defiStartBlock}}
         mapping:
           kind: ethereum/events
           apiVersion: 0.0.4

@@ -5,19 +5,21 @@
     "build-contract": "solc contracts/DefiRound.sol --abi -o abis --overwrite && solc contracts/DefiRound.sol --bin -o bin --overwrite",
     "create": "graph create Tokemak/tokemak-subgraph --node https://api.thegraph.com/deploy/",
     "create-local": "graph create Tokemak/tokemak-subgraph --node http://127.0.0.1:8020",
-    "codegen": "graph codegen",
+    "codegen": "rimraf generated && rimraf build && graph codegen",
     "build": "graph build",
     "deploy": "graph deploy Tokemak/tokemak-subgraph --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "deploy-local": "graph deploy Tokemak/tokemak-subgraph --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
     "node": "ganache-cli -h 0.0.0.0",
     "test": "mocha --timeout 0",
-    "deploy-contracts": "node scripts/deploy.js",
-    "full-local": "npm run codegen && npm run build && npm run create-local && npm run deploy-local"
+    "full-local": "npm run codegen && npm run build && npm run create-local && npm run deploy-local",
+    "prepare:mainnet": "mustache config/mainnet.json subgraph.template.yaml > subgraph.yaml",
+    "prepare:goerli": "mustache config/goerli.json subgraph.template.yaml > subgraph.yaml"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.20.1",
     "@graphprotocol/graph-ts": "^0.20.0",
-    "ethereum-waffle": "^3.4.0"
+    "ethereum-waffle": "^3.4.0",
+    "rimraf": "^3.0.2"
   },
   "dependencies": {
     "@tokemak/contracts": "0.0.12",
@@ -34,6 +36,7 @@
     "graphql-request": "^3.4.0",
     "hardhat": "^2.4.3",
     "mocha": "^9.0.2",
+    "mustache": "^4.2.0",
     "truffle": "^5.0.4",
     "truffle-contract": "^4.0.5",
     "truffle-hdwallet-provider": "^1.0.4"

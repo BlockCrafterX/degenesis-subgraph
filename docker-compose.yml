@@ -1,7 +1,7 @@
 version: '3'
 services:
   eth:
-    image: tokemak/hardhat:v0.0.2
+    image: tokemak/hardhat:v2.6.3
     ports:
       - '8541:8541'
     environment: 
