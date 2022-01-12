@@ -1,6 +1,6 @@
 
     specVersion: 0.0.2
-    description: Tokemak Subgraph
+    description: {{title}}
     repository: https://github.com/Tokemak/tokemak-subgraph
     schema:
       file: ./schema.graphql
@@ -15,7 +15,7 @@
           startBlock: {{defiStartBlock}}
         mapping:
           kind: ethereum/events
-          apiVersion: 0.0.4
+          apiVersion: 0.0.5
           language: wasm/assemblyscript
           entities:
             - Contract

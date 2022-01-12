@@ -1,5 +1,6 @@
 {
     "defiAddres": "0x3F350938420F78A2C8dF47c72f97a10Fd1cB55DB",
     "defiStartBlock": 6161089,
-    "network": "mainnet"
+    "network": "goerli",
+    "title": "Tokemak Degenesis Subgraph - Goerli"
 }

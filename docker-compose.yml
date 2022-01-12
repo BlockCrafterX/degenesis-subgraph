@@ -9,7 +9,7 @@ services:
       PORT: "8541"
       DOCKER_HARDHAT_networks_hardhat_forking_url: ${FORKING_URL}
   graph-node:
-    image: graphprotocol/graph-node:v0.22.0
+    image: graphprotocol/graph-node:v0.25.0
     ports:
       - '8000:8000'
       - '8001:8001'

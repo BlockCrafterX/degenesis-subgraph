@@ -47,15 +47,15 @@ export function handleDeposit(event: Deposited): void {
     let erc20 = ERC20.bind(Address.fromString(tokenId));
     token.name = erc20.name();
     token.symbol = erc20.symbol();
-    token.oracle = Oracle.load(oracle.toHex()).id;
-    token.pool = Pool.load(genesis.toHex()).id;
+    token.oracle = Oracle.load(oracle.toHex())!.id;
+    token.pool = Pool.load(genesis.toHex())!.id;
     token.total = BigInt.fromI32(0);
   }
 
   token.total = token.total.plus(event.params.tokenInfo.amount);  
 
   let contractId = event.address.toHex();
-  let contract = Contract.load(contractId);
+  let contract = Contract.load(contractId)!;
 
   contract.depositsOpen = true;
   contract.withdrawalsOpen = false;
@@ -128,15 +128,15 @@ export function handleWithdraw(event: Withdrawn): void {
     let erc20 = ERC20.bind(Address.fromString(tokenId));
     token.name = erc20.name();
     token.symbol = erc20.symbol();
-    token.oracle = Oracle.load(oracle.toHex()).id;
-    token.pool = Pool.load(genesis.toHex()).id;
+    token.oracle = Oracle.load(oracle.toHex())!.id;
+    token.pool = Pool.load(genesis.toHex())!.id;
     token.total = BigInt.fromI32(0);
   }
 
   token.total = token.total.minus(event.params.tokenInfo.amount);  
 
   let contractId = event.address.toHex();
-  let contract = Contract.load(contractId);
+  let contract = Contract.load(contractId)!;
 
   contract.depositsOpen = false;
   contract.withdrawalsOpen = true;
@@ -270,13 +270,13 @@ export function handleGenesisTransfer(event: GenesisTransfer): void {
   finalizedAssetEntity.privateFarming = true;
   finalizedAssetEntity.save();
 
-  let userBalance = Balance.load(finalizedAssetId); // Works because both are user address
+  let userBalance = Balance.load(finalizedAssetId)!; // Works because both are user address
   let userDepositedToken = userBalance.token;
 
-  let token = Token.load(userDepositedToken);
+  let token = Token.load(userDepositedToken)!;
   let genesis = token.pool;
   
-  let genesisEntity = Pool.load(genesis);
+  let genesisEntity = Pool.load(genesis)!;
   genesisEntity.amountDeposited = genesisEntity.amountDeposited.plus(event.params.amountTransferred);
 
   genesisEntity.save();
@@ -296,14 +296,14 @@ export function handleTreasuryTransfer(event: TreasuryTransfer): void {
     let tokenArr = event.params.tokens;
     let balanceEntity = new Balance(defiContract.treasury().toHex() + tokenArr[i].token.toHex());
     balanceEntity.address = tokenArr[i].token;
-    balanceEntity.token = Token.load(tokenArr[i].token.toHex()).id;
+    balanceEntity.token = Token.load(tokenArr[i].token.toHex())!.id;
     balanceEntity.total = tokenArr[i].amount;
     balanceEntity.save();
     balances.push(balanceEntity.id);
   }
 
   transferEntity.balances = balances;
-  let contract = Contract.load(event.address.toHex());
+  let contract = Contract.load(event.address.toHex())!;
   contract.depositsOpen = false;
   contract.withdrawalsOpen = false;
   contract.privateFarmingOpen = true;
@@ -321,7 +321,7 @@ export function handleRates(event: RatesPublished): void {
     let ratesId = token.toHex() + blockNum.toHex();
 
     let ratesEntity = new PublishedRates(ratesId);
-    ratesEntity.token = Token.load(token.toHex()).id;
+    ratesEntity.token = Token.load(token.toHex())!.id;
     ratesEntity.blocknumber = blockNum;
     ratesEntity.numberator = ratesIdArr[i].numerator;
     ratesEntity.denominator = ratesIdArr[i].denominator;
@@ -329,7 +329,7 @@ export function handleRates(event: RatesPublished): void {
     ratesEntity.save();
   } 
 
-  let contract = Contract.load(event.address.toHex());
+  let contract = Contract.load(event.address.toHex())!;
   contract.depositsOpen = false;
   contract.withdrawalsOpen = true;
   contract.privateFarmingOpen = false;

@@ -16,8 +16,8 @@
     "prepare:goerli": "mustache config/goerli.json subgraph.template.yaml > subgraph.yaml"
   },
   "devDependencies": {
-    "@graphprotocol/graph-cli": "^0.20.1",
-    "@graphprotocol/graph-ts": "^0.20.0",
+    "@graphprotocol/graph-cli": "^0.23.2",
+    "@graphprotocol/graph-ts": "^0.23.1",
     "ethereum-waffle": "^3.4.0",
     "rimraf": "^3.0.2"
   },
