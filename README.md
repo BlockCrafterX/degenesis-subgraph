@@ -8,9 +8,14 @@ and before any other deployment or build is attempted.
 when actually deploying***
 
 
-To start local development
+To get up and running locally 
 ```
+npm install
+
+# Startup the graph node, database, eth, and ipfs nodes
 docker-compose up
+
+# Build and deploy subgraph
 npm run full-local
 ```
 
