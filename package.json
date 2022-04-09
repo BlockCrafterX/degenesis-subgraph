@@ -1,16 +1,12 @@
 {
-  "name": "degenesis-subgraph",
+  "name": "hyport-presale-subgraph",
   "version": "0.1.0",
-  "scripts": {    
-    "create": "graph create Tokemak/degenesis-subgraph --node https://api.thegraph.com/deploy/",
-    "create-local": "graph create Tokemak/degenesis-subgraph --node http://127.0.0.1:8020",
+  "scripts": {
+    "create-local": "graph create hyport/presale-subgraph --node http://127.0.0.1:8020",
     "codegen": "rimraf generated && rimraf build && graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy Tokemak/degenesis-subgraph --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
-    "deploy-local": "graph deploy Tokemak/degenesis-subgraph --ipfs http://localhost:5001 --node http://127.0.0.1:8020",    
-    "full-local": "npm run codegen && npm run build && npm run create-local && npm run deploy-local",
-    "prepare:mainnet": "mustache config/mainnet.json subgraph.template.yaml > subgraph.yaml",
-    "prepare:goerli": "mustache config/goerli.json subgraph.template.yaml > subgraph.yaml"
+    "deploy-local": "graph deploy hyport/presale-subgraph --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
+    "full-local": "npm run codegen && npm run build && npm run create-local && npm run deploy-local"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.23.2",
